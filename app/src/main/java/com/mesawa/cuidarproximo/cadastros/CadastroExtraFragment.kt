@@ -1,5 +1,6 @@
 package com.mesawa.cuidarproximo.cadastros
 
+import android.content.Intent
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
@@ -9,7 +10,9 @@ import android.view.ViewGroup
 import android.widget.*
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
+import com.mesawa.cuidarproximo.MainActivity
 import com.mesawa.cuidarproximo.R
+import com.mesawa.cuidarproximo.ui.home.HomeActivity
 import com.mesawa.cuidarproximo.ui.home.HomeFragment
 
 class CadastroExtraFragment : Fragment() {
@@ -21,7 +24,7 @@ class CadastroExtraFragment : Fragment() {
     private lateinit var btnFinalizar: Button
     private lateinit var btnVerTermos: Button
 
-    private lateinit var viewModel: CadastroExtraViewModel
+    private lateinit var viewModel: CadastroViewModel
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -29,7 +32,7 @@ class CadastroExtraFragment : Fragment() {
     ): View {
         val view = inflater.inflate(R.layout.fragment_cadastro_extra, container, false)
 
-        viewModel = ViewModelProvider(requireActivity())[CadastroExtraViewModel::class.java]
+        viewModel = ViewModelProvider(requireActivity())[CadastroViewModel::class.java]
 
         cpfCuidador = view.findViewById(R.id.editTextCpfCuidador)
         txtCpfStatus = view.findViewById(R.id.txtCpfStatus)
@@ -89,19 +92,30 @@ class CadastroExtraFragment : Fragment() {
         }
 
         // 🚀 FINALIZAR CADASTRO
-        btnFinalizar
+        btnFinalizar.setOnClickListener {
+            // Atualiza dados no ViewModel
+            viewModel.cpfCuidador = cpfCuidador.text.toString()
 
-        // Observando o status do cadastro
+            if (validarCampos()) {
+                btnFinalizar.isEnabled = false
+                viewModel.salvarCadastro()
+            } else {
+                showToast("Preencha todos os campos!")
+            }
+        }
+
+        // Observa status do cadastro
         viewModel.cadastroStatus.observe(viewLifecycleOwner) { status ->
             when (status) {
                 "sucesso" -> {
-                    Toast.makeText(context, "Cadastro realizado com sucesso!", Toast.LENGTH_SHORT).show()
-                    btnFinalizar.isEnabled = true // Reabilita o botão
-                    // Navega para o próximo fragmento ou atividade, por exemplo:
-                    (activity as CadastroActivity).navegarPara(HomeFragment())
+                    Toast.makeText(requireContext(), "Cadastro realizado com sucesso!", Toast.LENGTH_SHORT).show()
+                    val intent = Intent(requireContext(), HomeActivity::class.java)
+                    intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+                    startActivity(intent)
                 }
+
                 "erro" -> {
-                    Toast.makeText(context, "Erro ao realizar o cadastro. Tente novamente.", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(requireContext(), "Erro ao realizar o cadastro. Tente novamente.", Toast.LENGTH_SHORT).show()
                     btnFinalizar.isEnabled = true
                 }
             }
@@ -110,81 +124,48 @@ class CadastroExtraFragment : Fragment() {
         return view
     }
 
-    // Exibe o AlertDialog com os Termos e Condições
-    private fun showTermosDialog() {
-        val builder = android.app.AlertDialog.Builder(requireContext())
-        builder.setTitle("Termos e Condições")
-        builder.setMessage("TERMOS DE USO – CUIDAR PRÓXIMO\n\n" +
-                "1. OBJETIVO DA PLATAFORMA\n..." // Continue com o conteúdo dos termos aqui.
-        )
-        builder.setPositiveButton("Fechar") { dialog, _ -> dialog.dismiss() }
-        builder.setCancelable(true)
-        builder.create().show()
-    }
-
-    // Validação dos campos
     private fun validarCampos(): Boolean {
         return when {
-            cpfCuidador.text.isEmpty() -> {
-                showToast("Informe o CPF!")
-                false
-            }
-            !isCPFValido(cpfCuidador.text.toString()) -> {
-                showToast("CPF inválido!")
-                false
-            }
-            !checkBoxTerms.isChecked -> {
-                showToast("Aceite os termos!")
-                false
-            }
+            cpfCuidador.text.isEmpty() -> { showToast("Informe o CPF!"); false }
+            !isCPFValido(cpfCuidador.text.toString()) -> { showToast("CPF inválido!"); false }
+            !checkBoxTerms.isChecked -> { showToast("Aceite os termos!"); false }
             else -> true
         }
     }
 
-    // Função para mostrar toast
     private fun showToast(message: String) {
         Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
     }
 
-    // CPF validado com regex e cálculo do dígito verificador
     private fun isCPFValido(cpf: String): Boolean {
         val cleanCpf = cpf.replace("[^\\d]".toRegex(), "")
         if (cleanCpf.length != 11 || cleanCpf.all { it == cleanCpf[0] }) return false
-
         return try {
             val numbers = cleanCpf.map { it.toString().toInt() }
             val sum1 = (0..8).sumOf { (10 - it) * numbers[it] }
             val digit1 = ((sum1 * 10) % 11).let { if (it == 10) 0 else it }
             val sum2 = (0..9).sumOf { (11 - it) * numbers[it] }
             val digit2 = ((sum2 * 10) % 11).let { if (it == 10) 0 else it }
-
             digit1 == numbers[9] && digit2 == numbers[10]
-        } catch (e: Exception) {
-            false
-        }
+        } catch (e: Exception) { false }
     }
 
-    // Mascara CPF
     class MascaraCPF(private val editText: EditText) : TextWatcher {
         private var isUpdating = false
-
         override fun afterTextChanged(s: Editable?) {
             if (isUpdating) return
             isUpdating = true
             val str = s.toString().replace("[^\\d]".toRegex(), "")
             val formatted = StringBuilder()
-
             for (i in str.indices) {
                 formatted.append(str[i])
                 if (i == 2 || i == 5) formatted.append(".")
                 if (i == 8) formatted.append("-")
             }
-
             editText.setText(formatted.toString())
             editText.setSelection(formatted.length)
             isUpdating = false
         }
-
         override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
         override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
     }

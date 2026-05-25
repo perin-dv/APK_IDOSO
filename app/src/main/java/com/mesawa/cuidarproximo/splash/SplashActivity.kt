@@ -8,9 +8,9 @@ import android.widget.ImageView
 import androidx.appcompat.app.AppCompatActivity
 import com.google.firebase.auth.FirebaseAuth
 import com.mesawa.cuidarproximo.R
-import com.mesawa.cuidarproximo.home.LoginActivity
 import com.mesawa.cuidarproximo.ui.home.HomeActivity
 
+import com.mesawa.cuidarproximo.home.LoginActivity
 
 class SplashActivity : AppCompatActivity() {
 
@@ -30,12 +30,9 @@ class SplashActivity : AppCompatActivity() {
                 // Usuário logado, vai para a tela principal
                 startActivity(Intent(this, HomeActivity::class.java))
             } else {
-                // Usuário não logado, vai para a tela de login
+                // Usuário não logado, vai para o login
                 startActivity(Intent(this, LoginActivity::class.java))
             }
-
-            overridePendingTransition(R.anim.fade_in, R.anim.fade_out)
-
 
             finish() // Finaliza a SplashActivity para não permitir voltar
         }, 2000) // 2 segundos de splash

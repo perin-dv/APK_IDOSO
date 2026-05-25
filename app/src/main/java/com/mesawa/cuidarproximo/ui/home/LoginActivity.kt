@@ -3,8 +3,11 @@ package com.mesawa.cuidarproximo.home
 
 import android.content.Intent
 import android.os.Bundle
+import android.text.method.HideReturnsTransformationMethod
+import android.text.method.PasswordTransformationMethod
 import android.widget.Button
 import android.widget.EditText
+import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
@@ -19,6 +22,7 @@ import com.google.android.gms.tasks.Task
 import com.mesawa.cuidarproximo.MainActivity
 import com.mesawa.cuidarproximo.R
 import com.mesawa.cuidarproximo.cadastros.CadastroActivity
+import com.mesawa.cuidarproximo.cadastros.CadastroContaFragment
 
 class LoginActivity : AppCompatActivity() {
 
@@ -49,10 +53,27 @@ class LoginActivity : AppCompatActivity() {
         val emailEditText = findViewById<EditText>(R.id.editTextEmail)
         val passwordEditText = findViewById<EditText>(R.id.editTextPassword)
         val loginButton = findViewById<Button>(R.id.loginButton)
+        val eyeIcon = findViewById<ImageView>(R.id.eyeIcon)
+
+        // Toggle de visibilidade da senha
+        eyeIcon.setOnClickListener {
+            if (passwordEditText.transformationMethod == HideReturnsTransformationMethod.getInstance()) {
+                passwordEditText.transformationMethod = PasswordTransformationMethod.getInstance()
+                eyeIcon.setImageResource(R.drawable.ic_eye) // Altere para o ícone do olho fechado
+            } else {
+                passwordEditText.transformationMethod = HideReturnsTransformationMethod.getInstance()
+                eyeIcon.setImageResource(R.drawable.ic_eye_open) // Altere para o ícone do olho aberto
+            }
+        }
 
         loginButton.setOnClickListener {
             val email = emailEditText.text.toString()
             val password = passwordEditText.text.toString()
+
+            if (email.isEmpty() || password.isEmpty()) {
+                Toast.makeText(this, "Preencha todos os campos!", Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
 
             auth.signInWithEmailAndPassword(email, password)
                 .addOnCompleteListener { task ->
@@ -62,8 +83,9 @@ class LoginActivity : AppCompatActivity() {
                         startActivity(Intent(this, MainActivity::class.java))
                         finish()
                     } else {
-                        // Falha no login
-                        Toast.makeText(this, "Erro no login. Tente novamente.", Toast.LENGTH_SHORT).show()
+                        // Falha no login, exibe a mensagem detalhada do erro
+                        val errorMessage = task.exception?.message ?: "Erro desconhecido!"
+                        Toast.makeText(this, "Erro no login: $errorMessage", Toast.LENGTH_SHORT).show()
                     }
                 }
         }

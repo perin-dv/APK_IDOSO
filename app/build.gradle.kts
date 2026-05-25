@@ -46,6 +46,7 @@ dependencies {
     // 🔥 Firebase (VERSÃO LIMPA)
     implementation(libs.firebase.firestore)
     implementation(libs.firebase.auth)
+    implementation(libs.firebase.core)
     implementation(libs.firebase.firestore.ktx.v2514)
     implementation(libs.firebase.auth.ktx.v2321)
     implementation(libs.google.firebase.analytics)

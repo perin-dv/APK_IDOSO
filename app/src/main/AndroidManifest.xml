@@ -36,6 +36,13 @@
             </intent-filter>
         </activity>
 
+
+        <activity
+            android:name=".ui.home.HomeActivity"
+            android:exported="true"
+            android:label="@string/app_name" />
+
+
         <activity
             android:name=".cadastros.CadastroActivity"
             android:exported="true"

@@ -1,5 +1,6 @@
 package com.mesawa.cuidarproximo.cadastros
 
+import android.annotation.SuppressLint
 import android.app.DatePickerDialog
 import android.os.Bundle
 import android.text.Editable
@@ -27,7 +28,7 @@ class CadastroIdosoFragment : Fragment() {
     private lateinit var editTextOutro: EditText
     private lateinit var btnContinuar: Button
 
-    private lateinit var viewModel: CadastroIdosoViewModel
+    private lateinit var viewModel: CadastroViewModel
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -36,7 +37,7 @@ class CadastroIdosoFragment : Fragment() {
 
         val view = inflater.inflate(R.layout.fragment_cadastro_idoso, container, false)
 
-        viewModel = ViewModelProvider(requireActivity())[CadastroIdosoViewModel::class.java]
+        viewModel = ViewModelProvider(requireActivity())[CadastroViewModel::class.java]
 
         nomeIdoso = view.findViewById(R.id.editTextNomeIdoso)
         cpfIdoso = view.findViewById(R.id.editTextCpfIdoso)
@@ -103,13 +104,12 @@ class CadastroIdosoFragment : Fragment() {
 
         // Botão
         btnContinuar.setOnClickListener {
-            if (!validarCampos()) return@setOnClickListener
-
+            // Coleta os dados mas não salva no Firestore ainda
             viewModel.nomeIdoso = nomeIdoso.text.toString()
             viewModel.cpfIdoso = cpfIdoso.text.toString()
             viewModel.dataNascimento = dataNascimento.text.toString()
-            viewModel.genero = spinnerGenero.selectedItem.toString()
             viewModel.cidade = cidade.text.toString()
+            viewModel.genero = spinnerGenero.selectedItem.toString()
 
             viewModel.condicao = if (spinnerCondicao.selectedItem.toString() == "Outro") {
                 editTextOutro.text.toString()
@@ -119,14 +119,14 @@ class CadastroIdosoFragment : Fragment() {
 
             viewModel.dependencia = spinnerDependencia.selectedItem.toString()
 
-            // Navega para o próximo fragmento (CadastroExtraFragment)
+            // Navega para o próximo fragmento sem salvar
             (activity as CadastroActivity).navegarPara(CadastroExtraFragment())
         }
-
         return view
     }
 
     // 📅 Date Picker (Profissional)
+    @SuppressLint("DefaultLocale")
     private fun mostrarDatePicker() {
         val calendar = Calendar.getInstance()
 

@@ -24,7 +24,7 @@ class CadastroContaFragment : Fragment() {
     private lateinit var txtEmailStatus: TextView
     private lateinit var txtSenhaStatus: TextView
 
-    private lateinit var viewModel: CadastroContaViewModel
+    private lateinit var viewModel: CadastroViewModel
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -33,7 +33,7 @@ class CadastroContaFragment : Fragment() {
 
         val view = inflater.inflate(R.layout.fragment_cadastro_conta, container, false)
 
-        viewModel = ViewModelProvider(requireActivity())[CadastroContaViewModel::class.java]
+        viewModel = ViewModelProvider(requireActivity())[CadastroViewModel::class.java]
 
         nomeResponsavel = view.findViewById(R.id.editTextNomeResponsavel)
         telefone = view.findViewById(R.id.editTextTelefone)
@@ -44,10 +44,10 @@ class CadastroContaFragment : Fragment() {
         txtEmailStatus = view.findViewById(R.id.txtEmailStatus)
         txtSenhaStatus = view.findViewById(R.id.txtSenhaStatus)
 
-        // 📞 Aplicar a máscara para o telefone
+        // Aplicar a máscara para o telefone
         telefone.addTextChangedListener(MascaraTelefone(telefone))
 
-        // 📧 VALIDAÇÃO EMAIL
+        // Validação do email
         email.addTextChangedListener(object : TextWatcher {
             override fun afterTextChanged(s: Editable?) {
                 val emailTexto = s.toString()
@@ -60,12 +60,11 @@ class CadastroContaFragment : Fragment() {
                     txtEmailStatus.setTextColor(resources.getColor(android.R.color.holo_red_dark))
                 }
             }
-
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
         })
 
-        // 🔐 VALIDAÇÃO SENHA
+        // Validação de senha
         confirmSenha.addTextChangedListener(object : TextWatcher {
             override fun afterTextChanged(s: Editable?) {
                 val senhaTexto = senha.text.toString()
@@ -85,7 +84,6 @@ class CadastroContaFragment : Fragment() {
                     txtSenhaStatus.setTextColor(resources.getColor(android.R.color.holo_red_dark))
                 }
             }
-
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
         })
@@ -94,8 +92,7 @@ class CadastroContaFragment : Fragment() {
         viewModel.cadastroStatus.observe(viewLifecycleOwner, Observer { status ->
             when (status) {
                 "sucesso" -> {
-                    // Navegar para o próximo fragmento (CadastroIdosoFragment)
-                    (activity as CadastroActivity).navegarPara(CadastroIdosoFragment())
+                    (activity as CadastroActivity).navegarPara(CadastroIdosoFragment()) // Navega para o próximo fragmento
                 }
                 "erro" -> {
                     showToast("Erro desconhecido!")
@@ -115,20 +112,20 @@ class CadastroContaFragment : Fragment() {
             }
         })
 
-        // Dentro de CadastroContaFragment
+        // Lógica do botão "Continuar"
         btnContinuar.setOnClickListener {
+            // Coleta os dados mas não salva no Firestore ainda
             viewModel.nomeResponsavel = nomeResponsavel.text.toString()
             viewModel.telefone = telefone.text.toString()
             viewModel.email = email.text.toString()
             viewModel.senha = senha.text.toString()
             viewModel.confirmSenha = confirmSenha.text.toString()
 
-            // Chama o método no ViewModel para validar os campos
-            viewModel.finalizarCadastro()
-
-            // Se tudo estiver validado, navega para o próximo fragmento
-            if (viewModel.cadastroStatus.value == "sucesso") {
-                (activity as CadastroActivity).navegarPara(CadastroIdosoFragment())  // Avança para o próximo fragmento
+            if (viewModel.validarCadastroConta()) {
+                // Navega para o próximo fragmento sem salvar
+                (activity as CadastroActivity).navegarPara(CadastroIdosoFragment())
+            } else {
+                showToast("Campos inválidos ou incompletos!")
             }
         }
 
