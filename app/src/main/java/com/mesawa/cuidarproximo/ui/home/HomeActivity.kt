@@ -5,9 +5,11 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.mesawa.cuidarproximo.R
-import com.mesawa.cuidarproximo.nav_bottom.SOSFragment
+import com.mesawa.cuidarproximo.ui.agenda.AgendaFragment
 import com.mesawa.cuidarproximo.ui.home.fragments.ProfileFragment
 import com.mesawa.cuidarproximo.ui.home.fragments.SettingsFragment
+import com.mesawa.cuidarproximo.ui.sos.SosFragment
+import com.mesawa.cuidarproximo.ui.home.fragments.SearchFragment
 
 class HomeActivity : AppCompatActivity() {
 
@@ -33,12 +35,13 @@ class HomeActivity : AppCompatActivity() {
 
                 R.id.navigation_profile -> replaceFragment(ProfileFragment())
 
-                R.id.navigation_sos -> replaceFragment(SOSFragment())
+                R.id.navigation_sos -> replaceFragment(SosFragment())
 
 
-              //  R.id.navigation_agenda -> replaceFragment(SOSFragment())
+                R.id.navigation_agenda -> replaceFragment(AgendaFragment())
 
-               // R.id.navigation_buscar -> replaceFragment(SOSFragment())
+                R.id.navigation_buscar -> replaceFragment(SearchFragment())
+
 
                 else -> false
             }

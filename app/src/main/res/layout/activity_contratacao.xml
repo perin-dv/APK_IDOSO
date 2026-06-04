@@ -1,0 +1,380 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#F3F6FB">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <!-- HERO TOPO -->
+
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="320dp">
+
+            <!-- IMAGEM -->
+
+            <ImageView
+                android:id="@+id/imgCuidador"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:scaleType="centerCrop"
+                android:src="@drawable/ic_profile"/>
+
+            <!-- OVERLAY ESCURO -->
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="#66000000"/>
+
+            <!-- CONTEUDO -->
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical"
+                android:gravity="bottom"
+                android:padding="24dp">
+
+                <!-- ONLINE -->
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/bg_online"
+                    android:orientation="horizontal"
+                    android:paddingHorizontal="14dp"
+                    android:paddingVertical="8dp">
+
+                    <View
+                        android:layout_width="10dp"
+                        android:layout_height="10dp"
+                        android:background="@drawable/bg_dot_online"/>
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Online agora"
+                        android:textColor="#FFFFFF"
+                        android:textStyle="bold"
+                        android:textSize="13sp"
+                        android:layout_marginStart="8dp"/>
+
+                </LinearLayout>
+
+                <!-- NOME -->
+
+                <TextView
+                    android:id="@+id/txtNome"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Ana Paula"
+                    android:textColor="#FFFFFF"
+                    android:textStyle="bold"
+                    android:textSize="34sp"
+                    android:layout_marginTop="18dp"/>
+
+                <!-- INFO -->
+
+                <TextView
+                    android:id="@+id/txtEspecialidade"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="🧑‍⚕️ Cuidadora especialista em idosos"
+                    android:textColor="#E5E7EB"
+                    android:textSize="15sp"
+                    android:layout_marginTop="4dp"/>
+
+                <!-- STATS -->
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:layout_marginTop="14dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="⭐ 4.9"
+                        android:textColor="#FFFFFF"
+                        android:textStyle="bold"
+                        android:textSize="14sp"/>
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text=" • 124 atendimentos"
+                        android:textColor="#E5E7EB"
+                        android:textSize="14sp"/>
+
+                </LinearLayout>
+
+            </LinearLayout>
+
+        </FrameLayout>
+
+        <!-- CONTEUDO -->
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="20dp">
+
+            <!-- CARD SOBRE -->
+
+            <androidx.cardview.widget.CardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:cardCornerRadius="28dp"
+                app:cardElevation="3dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="22dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Sobre"
+                        android:textStyle="bold"
+                        android:textSize="20sp"
+                        android:textColor="#111827"/>
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Especialista em cuidados com idosos, mobilidade reduzida, Alzheimer e monitoramento diário."
+                        android:textColor="#6B7280"
+                        android:textSize="15sp"
+                        android:lineSpacingExtra="4dp"
+                        android:layout_marginTop="12dp"/>
+
+                </LinearLayout>
+
+            </androidx.cardview.widget.CardView>
+
+            <!-- DISPONIBILIDADE -->
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Disponibilidade"
+                android:textStyle="bold"
+                android:textSize="22sp"
+                android:textColor="#111827"
+                android:layout_marginTop="28dp"/>
+
+            <!-- CHIPS -->
+
+            <HorizontalScrollView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:scrollbars="none"
+                android:layout_marginTop="16dp">
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <com.google.android.material.chip.Chip
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Hoje"
+                        app:chipBackgroundColor="#DBEAFE"/>
+
+                    <com.google.android.material.chip.Chip
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Amanhã"
+                        android:layout_marginStart="10dp"/>
+
+                    <com.google.android.material.chip.Chip
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Sexta"
+                        android:layout_marginStart="10dp"/>
+
+                </LinearLayout>
+
+            </HorizontalScrollView>
+
+            <!-- CARD CONTRATAÇÃO -->
+
+            <androidx.cardview.widget.CardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="26dp"
+                app:cardCornerRadius="30dp"
+                app:cardElevation="4dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="24dp">
+
+                    <!-- HORAS -->
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Quantidade de horas"
+                        android:textStyle="bold"
+                        android:textSize="17sp"
+                        android:textColor="#111827"/>
+
+                    <!-- CONTADOR -->
+
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:gravity="center_vertical"
+                        android:layout_marginTop="18dp">
+
+                        <com.google.android.material.button.MaterialButton
+                            android:id="@+id/btnMenos"
+                            android:layout_width="52dp"
+                            android:layout_height="52dp"
+                            android:text="-"
+                            android:textSize="24sp"
+                            app:cornerRadius="18dp"/>
+
+                        <TextView
+                            android:id="@+id/txtHoras"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="4h"
+                            android:textStyle="bold"
+                            android:textSize="28sp"
+                            android:textColor="#111827"
+                            android:layout_marginHorizontal="24dp"/>
+
+                        <com.google.android.material.button.MaterialButton
+                            android:id="@+id/btnMais"
+                            android:layout_width="52dp"
+                            android:layout_height="52dp"
+                            android:text="+"
+                            android:textSize="24sp"
+                            app:cornerRadius="18dp"/>
+
+                    </LinearLayout>
+
+                    <!-- ENDEREÇO -->
+
+                    <com.google.android.material.textfield.TextInputLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="26dp"
+                        app:boxCornerRadiusTopStart="22dp"
+                        app:boxCornerRadiusTopEnd="22dp"
+                        app:boxCornerRadiusBottomStart="22dp"
+                        app:boxCornerRadiusBottomEnd="22dp">
+
+                        <com.google.android.material.textfield.TextInputEditText
+                            android:id="@+id/editEndereco"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:hint="📍 Endereço atendimento"
+                            android:padding="18dp"/>
+
+                    </com.google.android.material.textfield.TextInputLayout>
+
+                    <!-- OBS -->
+
+                    <com.google.android.material.textfield.TextInputLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="16dp"
+                        app:boxCornerRadiusTopStart="22dp"
+                        app:boxCornerRadiusTopEnd="22dp"
+                        app:boxCornerRadiusBottomStart="22dp"
+                        app:boxCornerRadiusBottomEnd="22dp">
+
+                        <com.google.android.material.textfield.TextInputEditText
+                            android:id="@+id/editObs"
+                            android:layout_width="match_parent"
+                            android:layout_height="120dp"
+                            android:gravity="top"
+                            android:hint="Observações"
+                            android:padding="18dp"/>
+
+                    </com.google.android.material.textfield.TextInputLayout>
+
+                </LinearLayout>
+
+            </androidx.cardview.widget.CardView>
+
+            <!-- TOTAL -->
+
+            <androidx.cardview.widget.CardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="24dp"
+                app:cardCornerRadius="28dp"
+                app:cardElevation="2dp"
+                app:cardBackgroundColor="#ECFDF5">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="24dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Valor total"
+                        android:textColor="#065F46"
+                        android:textStyle="bold"
+                        android:textSize="16sp"/>
+
+                    <TextView
+                        android:id="@+id/txtTotal"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="R$140"
+                        android:textStyle="bold"
+                        android:textSize="38sp"
+                        android:textColor="#16A34A"
+                        android:layout_marginTop="10dp"/>
+
+                </LinearLayout>
+
+            </androidx.cardview.widget.CardView>
+
+            <!-- BOTAO -->
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnContratar"
+                android:layout_width="match_parent"
+                android:layout_height="64dp"
+                android:layout_marginTop="30dp"
+                android:layout_marginBottom="40dp"
+                android:text="Confirmar contratação"
+                android:textAllCaps="false"
+                android:textColor="#FFFFFF"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                app:backgroundTint="#2563EB"
+                app:cornerRadius="24dp"
+                app:icon="@drawable/ic_check"
+                app:iconGravity="textStart"
+                app:iconPadding="12dp"/>
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+</ScrollView>

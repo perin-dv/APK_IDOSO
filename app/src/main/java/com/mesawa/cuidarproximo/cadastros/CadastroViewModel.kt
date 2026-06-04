@@ -27,6 +27,7 @@ class CadastroViewModel : ViewModel() {
     var cidade: String = ""
     var condicao: String = ""
     var dependencia: String = ""
+    var idade: Int = 0
 
     // =========================
     // Dados extras

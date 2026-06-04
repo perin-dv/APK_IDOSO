@@ -117,6 +117,7 @@ class CadastroIdosoFragment : Fragment() {
                 spinnerCondicao.selectedItem.toString()
             }
 
+            viewModel.idade = calcularIdade(viewModel.dataNascimento)
             viewModel.dependencia = spinnerDependencia.selectedItem.toString()
 
             // Navega para o próximo fragmento sem salvar
@@ -144,6 +145,37 @@ class CadastroIdosoFragment : Fragment() {
         dialog.show()
     }
 
+
+    private fun calcularIdade(dataNascimento: String): Int {
+        return try {
+
+            val partes = dataNascimento.split("/")
+
+            val dia = partes[0].toInt()
+            val mes = partes[1].toInt() - 1
+            val ano = partes[2].toInt()
+
+            val nascimento = Calendar.getInstance()
+            nascimento.set(ano, mes, dia)
+
+            val hoje = Calendar.getInstance()
+
+            var idade = hoje.get(Calendar.YEAR) -
+                    nascimento.get(Calendar.YEAR)
+
+            if (
+                hoje.get(Calendar.DAY_OF_YEAR) <
+                nascimento.get(Calendar.DAY_OF_YEAR)
+            ) {
+                idade--
+            }
+
+            idade
+
+        } catch (e: Exception) {
+            0
+        }
+    }
     // 🔥 Validação CPF Segura
     private fun isCPFValido(cpf: String): Boolean {
         val cleanCpf = cpf.replace("[^\\d]".toRegex(), "")

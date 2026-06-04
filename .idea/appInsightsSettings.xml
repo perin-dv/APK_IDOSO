@@ -8,10 +8,10 @@
             <InsightsFilterSettings>
               <option name="connection">
                 <ConnectionSetting>
-                  <option name="appId" value="PLACEHOLDER" />
-                  <option name="mobileSdkAppId" value="" />
-                  <option name="projectId" value="" />
-                  <option name="projectNumber" value="" />
+                  <option name="appId" value="com.mesawa.cuidarproximo" />
+                  <option name="mobileSdkAppId" value="1:879103597653:android:a4073a941e05a8faac88dc" />
+                  <option name="projectId" value="cuidar-proximo-e6d51" />
+                  <option name="projectNumber" value="879103597653" />
                 </ConnectionSetting>
               </option>
               <option name="signal" value="SIGNAL_UNSPECIFIED" />

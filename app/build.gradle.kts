@@ -42,18 +42,22 @@ android {
 dependencies {
 
     implementation(platform(libs.firebase.bom))
+    implementation(libs.billing)
 
     // 🔥 Firebase (VERSÃO LIMPA)
     implementation(libs.firebase.firestore)
-    implementation(libs.firebase.auth)
     implementation(libs.firebase.core)
     implementation(libs.firebase.firestore.ktx.v2514)
     implementation(libs.firebase.auth.ktx.v2321)
     implementation(libs.google.firebase.analytics)
     implementation(libs.jbcrypt)
     // Outros
+    implementation(libs.okhttp)
+    implementation(libs.checkout)
+    implementation(libs.okio)
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
+    //noinspection LoginCredentials
     implementation(libs.play.services.auth)
     implementation(libs.material)
     implementation(libs.androidx.constraintlayout)
@@ -62,6 +66,7 @@ dependencies {
     implementation(libs.androidx.navigation.fragment.ktx)
     implementation(libs.androidx.navigation.ui.ktx)
     implementation(libs.firebase.database)
+    implementation(libs.play.services.location)
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
