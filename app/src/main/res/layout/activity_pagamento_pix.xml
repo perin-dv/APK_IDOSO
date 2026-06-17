@@ -11,16 +11,6 @@
         android:orientation="vertical"
         android:padding="20dp">
 
-        <!-- Toolbar -->
-        <androidx.appcompat.widget.Toolbar
-            android:id="@+id/toolbarPix"
-            android:layout_width="match_parent"
-            android:layout_height="56dp"
-            android:background="#FFFFFF"
-            android:elevation="2dp"
-            android:theme="@style/ThemeOverlay.AppCompat.Light"
-            android:title="Pagamento PIX" />
-
         <!-- Resumo do pagamento -->
         <androidx.cardview.widget.CardView
             android:layout_width="match_parent"
@@ -38,10 +28,20 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="💸 PIX Instantâneo"
-                    android:textSize="18sp"
+                    android:layout_gravity="center_horizontal"
+                    android:text="PIX"
+                    android:textSize="42sp"
                     android:textStyle="bold"
                     android:textColor="#065F46"/>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal"
+                    android:layout_marginTop="2dp"
+                    android:text="Pague com QR Code ou copia e cola"
+                    android:textSize="15sp"
+                    android:textColor="#4B5563"/>
 
                 <TextView
                     android:id="@+id/txtCuidadorPix"
@@ -72,11 +72,11 @@
                 <!-- QR Code -->
                 <ImageView
                     android:id="@+id/imgQrCode"
-                    android:layout_width="250dp"
-                    android:layout_height="250dp"
+                    android:layout_width="280dp"
+                    android:layout_height="280dp"
                     android:layout_gravity="center"
                     android:contentDescription="QR Code PIX"
-                    android:layout_marginBottom="16dp"/>
+                    android:layout_marginBottom="18dp"/>
 
                 <!-- Código Pix -->
                 <TextView
@@ -85,6 +85,8 @@
                     android:layout_height="wrap_content"
                     android:text="00020126580014BR.GOV.BCB.PIX0114+5521999999995204000053039865802BR5925Fulano de Tal6009Cidade62070503***6304ABCD"
                     android:layout_marginBottom="16dp"
+                    android:background="#F3F4F6"
+                    android:padding="12dp"
                     android:textSize="14sp"
                     android:textColor="#111827"/>
 
@@ -108,7 +110,7 @@
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="Copiar código PIX"
+                            android:text="CLIQUE AQUI PARA COPIAR"
                             android:textStyle="bold"
                             android:textColor="#065F46"
                             android:textSize="16sp"/>

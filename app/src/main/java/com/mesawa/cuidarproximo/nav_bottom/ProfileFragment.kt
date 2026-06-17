@@ -10,7 +10,7 @@ import androidx.cardview.widget.CardView
 import androidx.fragment.app.Fragment
 import com.google.firebase.auth.FirebaseAuth
 import com.mesawa.cuidarproximo.R
-import com.mesawa.cuidarproximo.home.LoginActivity
+import com.mesawa.cuidarproximo.ui.home.LoginActivity
 import com.mesawa.cuidarproximo.ui.medicamentos.MedicamentosActivity
 import com.mesawa.cuidarproximo.ui.sos.SOSContactsActivity
 

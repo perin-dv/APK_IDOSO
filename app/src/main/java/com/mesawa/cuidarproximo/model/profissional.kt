@@ -1,6 +1,7 @@
 package com.mesawa.cuidarproximo.model
 
 data class Profissional(
+    val cuidadorId: String = "",
     val nome: String = "",
     val especialidade: String = "",
     val avaliacao: Double = 0.0,

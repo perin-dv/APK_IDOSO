@@ -170,9 +170,14 @@ class HomeFragment : Fragment() {
                         val avaliacao = (medico["avaliacao"] as? String)?.toDoubleOrNull() ?: 0.0
                         val atendimentos = (medico["atendimentos"] as? String)?.toIntOrNull() ?: 0
                         val valorHora = (medico["valorHora"] as? String)?.toDoubleOrNull() ?: 0.0
+                        val cuidadorId =
+                            (medico["uid"] as? String)
+                                ?.takeIf { it.isNotBlank() }
+                                ?: idMedico.toString()
 
                         profissionais.add(
                             Profissional(
+                                cuidadorId = cuidadorId,
                                 nome = nome,
                                 especialidade = especialidade,
                                 avaliacao = avaliacao,
@@ -205,6 +210,7 @@ class HomeFragment : Fragment() {
                     intent.putExtra("nome", prof.nome)
                     intent.putExtra("especialidade", prof.especialidade)
                     intent.putExtra("valorHora", prof.valorHora)
+                    intent.putExtra("cuidadorId", prof.cuidadorId)
 
                     startActivity(intent)
                 }

@@ -1,6 +1,58 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-             android:layout_width="match_parent"
-             android:layout_height="match_parent">
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+    <!-- Toolbar -->
+    <com.google.android.material.appbar.MaterialToolbar
+        android:id="@+id/toolbarCartao"
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:background="@android:color/white"
+        android:title=""
+        android:titleTextColor="#111827"
+        app:navigationIcon="?attr/homeAsUpIndicator"
+        app:navigationIconTint="#111827"/>
+
+    <LinearLayout
+        android:id="@+id/painelStatusCheckout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="#F5F7FA"
+        android:orientation="horizontal"
+        android:paddingStart="16dp"
+        android:paddingTop="10dp"
+        android:paddingEnd="16dp"
+        android:paddingBottom="10dp">
+
+        <ProgressBar
+            android:id="@+id/progressoCheckout"
+            style="?android:attr/progressBarStyleSmall"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:layout_gravity="center_vertical" />
+
+        <TextView
+            android:id="@+id/txtStatusCheckout"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:layout_marginStart="12dp"
+            android:ellipsize="end"
+            android:maxLines="2"
+            android:text="Carregando Mercado Pago..."
+            android:textColor="#263238"
+            android:textSize="14sp" />
+    </LinearLayout>
+
+    <!-- WebView para Checkout Pro -->
+    <WebView
+        android:id="@+id/webPagamento"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"/>
+
+</LinearLayout>

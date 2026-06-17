@@ -4,6 +4,7 @@ import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.widget.TextView
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.google.android.material.button.MaterialButton
 import com.google.firebase.firestore.FirebaseFirestore
@@ -23,7 +24,7 @@ class EmAndamentoActivity : AppCompatActivity() {
     private val firestore = FirebaseFirestore.getInstance()
     private var listener: ListenerRegistration? = null
 
-    private val atendimentoId = "id_atendimento_exemplo" // depois pega do intent
+    private var contratacaoId = ""
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -36,6 +37,8 @@ class EmAndamentoActivity : AppCompatActivity() {
         btnSOS = findViewById(R.id.btnSOS)
         cardLigar = findViewById(R.id.cardLigar)
         cardChat = findViewById(R.id.cardChat)
+
+        contratacaoId = intent.getStringExtra("contratacaoId").orEmpty()
 
         btnSOS.setOnClickListener {
             // Abrir número de emergência
@@ -65,12 +68,18 @@ class EmAndamentoActivity : AppCompatActivity() {
     }
 
     private fun acompanharStatusRealtime() {
-        listener = firestore.collection("atendimentos")
-            .document(atendimentoId)
+        if (contratacaoId.isBlank()) {
+            Toast.makeText(this, "Contratação inválida", Toast.LENGTH_LONG).show()
+            finish()
+            return
+        }
+
+        listener = firestore.collection("contratacoes")
+            .document(contratacaoId)
             .addSnapshotListener { snapshot, error ->
                 if (error != null || snapshot == null || !snapshot.exists()) return@addSnapshotListener
 
-                val nomeCuidador = snapshot.getString("nomeCuidador") ?: "Cuidador"
+                val nomeCuidador = snapshot.getString("cuidadorNome") ?: "Cuidador"
                 val status = snapshot.getString("status") ?: "A caminho"
                 val eta = snapshot.getString("eta") ?: "12 min"
 

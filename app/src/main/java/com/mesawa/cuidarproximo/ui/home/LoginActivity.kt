@@ -1,4 +1,4 @@
-package com.mesawa.cuidarproximo.home
+package com.mesawa.cuidarproximo.ui.home
 
 
 import android.content.Intent
@@ -19,10 +19,9 @@ import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.android.gms.common.api.ApiException
 import com.google.android.gms.tasks.Task
-import com.mesawa.cuidarproximo.MainActivity
 import com.mesawa.cuidarproximo.R
 import com.mesawa.cuidarproximo.cadastros.CadastroActivity
-import com.mesawa.cuidarproximo.cadastros.CadastroContaFragment
+import com.mesawa.cuidarproximo.ui.home.HomeActivity
 
 class LoginActivity : AppCompatActivity() {
 
@@ -80,7 +79,7 @@ class LoginActivity : AppCompatActivity() {
                     if (task.isSuccessful) {
                         // Login bem-sucedido
                         val user = auth.currentUser
-                        startActivity(Intent(this, MainActivity::class.java))
+                        startActivity(Intent(this, HomeActivity::class.java))
                         finish()
                     } else {
                         // Falha no login, exibe a mensagem detalhada do erro
@@ -126,7 +125,7 @@ class LoginActivity : AppCompatActivity() {
                 if (task.isSuccessful) {
                     // Login bem-sucedido
                     val user = auth.currentUser
-                    startActivity(Intent(this, MainActivity::class.java))
+                    startActivity(Intent(this, HomeActivity::class.java))
                     finish()
                 } else {
                     // Falha ao autenticar com o Google

@@ -17,15 +17,9 @@ dependencyResolutionManagement {
         google()
         mavenCentral()
         maven { url = uri("https://jitpack.io/") }
-        maven {
-            url = uri("https://artifacts.mercadopago.com/repo-mpandroid/")
-        }
     }
 }
 
 rootProject.name = "Cuidar Proximo"
 include(":app")
 
-
-
- 

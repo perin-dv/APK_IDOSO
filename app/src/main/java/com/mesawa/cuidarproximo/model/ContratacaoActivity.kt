@@ -1,6 +1,5 @@
 package com.mesawa.cuidarproximo.ui.model
 
-import android.annotation.SuppressLint
 import android.content.Intent
 import android.os.Bundle
 import android.widget.TextView
@@ -8,50 +7,62 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.textfield.TextInputEditText
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
 import com.mesawa.cuidarproximo.R
-import com.mesawa.cuidarproximo.model.Contratacao
+import com.mesawa.cuidarproximo.ui.pagamento.PagamentoActivity
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
+import kotlin.math.abs
 
 class ContratacaoActivity : AppCompatActivity() {
 
     private lateinit var btnContratar: MaterialButton
     private lateinit var txtHoras: TextView
     private lateinit var txtTotal: TextView
+    private lateinit var txtValorHora: TextView
     private lateinit var editEndereco: TextInputEditText
     private lateinit var editObs: TextInputEditText
 
     private var horas = 4
     private var valorHora = 0.0
     private var nomeProfissional = ""
+    private var cuidadorId = ""
+
+    private var salvando = false
 
     private val firestore = FirebaseFirestore.getInstance()
+    private val auth = FirebaseAuth.getInstance()
 
-    @SuppressLint("CutPasteId")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_contratacao)
+
         supportActionBar?.hide()
 
         btnContratar = findViewById(R.id.btnContratar)
         txtHoras = findViewById(R.id.txtHoras)
         txtTotal = findViewById(R.id.txtTotal)
+
+        // Atenção: esse ID precisa existir no XML.
+        txtValorHora = findViewById(R.id.txtValorHora)
+
         editEndereco = findViewById(R.id.editEndereco)
         editObs = findViewById(R.id.editObs)
 
         val txtNomeProfissional: TextView = findViewById(R.id.txtNome)
         val txtEspecialidade: TextView = findViewById(R.id.txtEspecialidade)
-        val txtValorHora: TextView = findViewById(R.id.txtTotal)
 
-        // BOTÕES + E -
-        val btnMais: TextView = findViewById(R.id.btnMais)
-        val btnMenos: TextView = findViewById(R.id.btnMenos)
+        val btnMais: MaterialButton = findViewById(R.id.btnMais)
+        val btnMenos: MaterialButton = findViewById(R.id.btnMenos)
 
-        // DADOS RECEBIDOS
         nomeProfissional = intent.getStringExtra("nome") ?: "Cuidador"
-        val especialidade = intent.getStringExtra("especialidade") ?: ""
         valorHora = intent.getDoubleExtra("valorHora", 0.0)
+        cuidadorId = intent.getStringExtra("cuidadorId") ?: ""
+        val especialidade = intent.getStringExtra("especialidade") ?: ""
 
-        // Preenche os TextViews
         txtNomeProfissional.text = nomeProfissional
         txtEspecialidade.text = especialidade
         txtValorHora.text = "R$ %.2f/h".format(valorHora)
@@ -70,8 +81,6 @@ class ContratacaoActivity : AppCompatActivity() {
             }
         }
 
-        editEndereco.setText("Rua Exemplo, Maringá - PR")
-
         btnContratar.setOnClickListener {
             criarContratacao()
         }
@@ -80,42 +89,182 @@ class ContratacaoActivity : AppCompatActivity() {
     private fun atualizarValores() {
         txtHoras.text = horas.toString()
         val total = horas * valorHora
-        txtTotal.text = "%.2f".format(total)
+        txtTotal.text = "R$ %.2f".format(total)
     }
 
     private fun criarContratacao() {
-        val endereco = editEndereco.text.toString()
-        val observacao = editObs.text.toString()
-        val valorTotal = horas * valorHora
+        if (salvando) return
 
-        val contratacao = Contratacao(
-            cuidadorId = "123",
-            cuidadorNome = nomeProfissional, // usa o nome real
-            familiarId = "456",
-            idosoNome = "Maria Helena",
-            endereco = endereco,
-            observacao = observacao,
-            horas = horas,
-            valor = valorTotal,
-            status = "aguardando_pagamento"
-        )
+        val userId = auth.currentUser?.uid
 
-        firestore.collection("contratacoes")
-            .add(contratacao)
-            .addOnSuccessListener { docRef ->
-                Toast.makeText(this, "Abrindo pagamento...", Toast.LENGTH_SHORT).show()
-                abrirPagamento(docRef.id, valorTotal, nomeProfissional)
+        if (userId.isNullOrBlank()) {
+            Toast.makeText(this, "Usuário não logado", Toast.LENGTH_SHORT).show()
+            return
+        }
+
+        if (cuidadorId.isBlank()) {
+            Toast.makeText(this, "Cuidador inválido", Toast.LENGTH_SHORT).show()
+            return
+        }
+
+        val endereco = editEndereco.text?.toString()?.trim().orEmpty()
+        val observacao = editObs.text?.toString()?.trim().orEmpty()
+
+        if (endereco.isBlank()) {
+            Toast.makeText(this, "Informe o endereço", Toast.LENGTH_SHORT).show()
+            return
+        }
+
+        salvando = true
+        btnContratar.isEnabled = false
+        btnContratar.text = "Aguarde..."
+
+        firestore.collection("clientes")
+            .whereEqualTo("sistema.uid_auth", userId)
+            .limit(1)
+            .get()
+            .addOnSuccessListener { query ->
+                val clienteDoc = query.documents.firstOrNull()
+                val info = clienteDoc?.get("info") as? Map<*, *>
+                val responsavel = clienteDoc?.get("responsavel") as? Map<*, *>
+
+                salvarContratacao(
+                    userId = userId,
+                    clienteDocumentoId = clienteDoc?.id.orEmpty(),
+                    clienteNome = responsavel?.get("nome_responsavel") as? String ?: "",
+                    clienteEmail = responsavel?.get("email") as? String ?: "",
+                    idosoNome = info?.get("nome_idoso") as? String ?: "",
+                    endereco = endereco,
+                    observacao = observacao
+                )
             }
             .addOnFailureListener {
-                Toast.makeText(this, "Erro ao contratar", Toast.LENGTH_SHORT).show()
+                salvarContratacao(
+                    userId = userId,
+                    clienteDocumentoId = "",
+                    clienteNome = "",
+                    clienteEmail = auth.currentUser?.email.orEmpty(),
+                    idosoNome = "",
+                    endereco = endereco,
+                    observacao = observacao
+                )
             }
     }
 
-    private fun abrirPagamento(contratacaoId: String, valor: Double, cuidadorNome: String) {
-        val intent = Intent(this, PagamentoActivity::class.java)
-        intent.putExtra("contratacaoId", contratacaoId)
-        intent.putExtra("valor", valor)
-        intent.putExtra("cuidadorNome", cuidadorNome) // envia o nome real
+    private fun salvarContratacao(
+        userId: String,
+        clienteDocumentoId: String,
+        clienteNome: String,
+        clienteEmail: String,
+        idosoNome: String,
+        endereco: String,
+        observacao: String
+    ) {
+        val valorTotal = horas * valorHora
+        val taxaPlataforma = 0.09
+        val valorComissao = valorTotal * taxaPlataforma
+        val valorLiquidoCuidador = valorTotal - valorComissao
+
+        val contratacaoId = gerarContratacaoId(userId, endereco, idosoNome)
+        val docRef = firestore.collection("contratacoes").document(contratacaoId)
+
+        val dados = hashMapOf<String, Any?>(
+            "id" to contratacaoId,
+            "codigoContratacao" to contratacaoId,
+            "clienteId" to userId,
+            "clienteDocumentoId" to clienteDocumentoId,
+            "clienteNome" to clienteNome,
+            "clienteEmail" to clienteEmail,
+            "cuidadorId" to cuidadorId,
+            "cuidadorNome" to nomeProfissional,
+            "idosoNome" to idosoNome,
+            "endereco" to endereco,
+            "observacao" to observacao,
+            "horas" to horas,
+            "valorTotal" to valorTotal,
+            "taxaPlataforma" to taxaPlataforma,
+            "valorComissao" to valorComissao,
+            "valorLiquidoCuidador" to valorLiquidoCuidador,
+            "status" to "aguardando_pagamento",
+            "pagamentoStatus" to "pending",
+            "metodoPagamento" to "pix",
+            "paymentId" to null,
+            "updatedAt" to FieldValue.serverTimestamp()
+        )
+
+        docRef.get()
+            .addOnSuccessListener {
+                val docParaSalvar =
+                    if (it.exists() && it.getString("pagamentoStatus") == "approved") {
+                        firestore.collection("contratacoes")
+                            .document("${contratacaoId}-${gerarSufixoHorario()}")
+                    } else {
+                        docRef
+                    }
+
+                val idFinal = docParaSalvar.id
+                dados["id"] = idFinal
+                dados["codigoContratacao"] = idFinal
+
+                if (!it.exists() || docParaSalvar.id != docRef.id) {
+                    dados["createdAt"] = FieldValue.serverTimestamp()
+                }
+
+                docParaSalvar.set(dados, com.google.firebase.firestore.SetOptions.merge())
+                    .addOnSuccessListener {
+                        Toast.makeText(
+                            this,
+                            "Redirecionando para pagamento...",
+                            Toast.LENGTH_SHORT
+                        ).show()
+
+                        abrirPagamento(
+                            contratacaoId = idFinal,
+                            valor = valorTotal,
+                            cuidadorNome = nomeProfissional
+                        )
+                    }
+                    .addOnFailureListener {
+                        tratarErroSalvarContratacao()
+                    }
+            }
+            .addOnFailureListener {
+                tratarErroSalvarContratacao()
+            }
+    }
+
+    private fun tratarErroSalvarContratacao() {
+        salvando = false
+        btnContratar.isEnabled = true
+        btnContratar.text = "Contratar"
+
+        Toast.makeText(this, "Erro ao criar contratação", Toast.LENGTH_SHORT).show()
+    }
+
+    private fun gerarContratacaoId(userId: String, endereco: String, idosoNome: String): String {
+        val data = SimpleDateFormat("yyyyMMdd", Locale.US).format(Date())
+        val sufixo = userId.takeLast(6).uppercase(Locale.US)
+        val chave = "$userId|$cuidadorId|$endereco|$idosoNome|$horas|$valorHora"
+        val resumo = abs(chave.hashCode()).toString(36).uppercase(Locale.US)
+        return "CTR-$data-$sufixo-$resumo"
+    }
+
+    private fun gerarSufixoHorario(): String {
+        return SimpleDateFormat("HHmmss", Locale.US).format(Date())
+    }
+
+    private fun abrirPagamento(
+        contratacaoId: String,
+        valor: Double,
+        cuidadorNome: String
+    ) {
+        val intent = Intent(this, PagamentoActivity::class.java).apply {
+            putExtra("contratacaoId", contratacaoId)
+            putExtra("valor", valor)
+            putExtra("cuidadorNome", cuidadorNome)
+        }
+
         startActivity(intent)
+        finish()
     }
 }

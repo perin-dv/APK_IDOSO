@@ -10,7 +10,7 @@ import com.google.firebase.auth.FirebaseAuth
 import com.mesawa.cuidarproximo.R
 import com.mesawa.cuidarproximo.ui.home.HomeActivity
 
-import com.mesawa.cuidarproximo.home.LoginActivity
+import com.mesawa.cuidarproximo.ui.home.LoginActivity
 
 class SplashActivity : AppCompatActivity() {
 
