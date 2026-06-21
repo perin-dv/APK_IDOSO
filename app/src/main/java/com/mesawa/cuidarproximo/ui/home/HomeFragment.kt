@@ -502,20 +502,40 @@ class HomeFragment : Fragment() {
         }
 
         FirebaseFirestore.getInstance()
-            .collection("enderecos_idosos")
-            .document(uid)
+            .collection("clientes")
+            .whereEqualTo("sistema.uid_auth", uid)
+            .limit(1)
             .get()
-            .addOnSuccessListener { documento ->
-                val enderecoIncompleto =
-                    !documento.exists() ||
-                        documento.getString("rua").isNullOrBlank() ||
-                        documento.getString("numero").isNullOrBlank() ||
-                        documento.getString("bairro").isNullOrBlank() ||
-                        documento.getString("cidade").isNullOrBlank()
+            .addOnSuccessListener { query ->
+                val clienteDocumentoId = query.documents.firstOrNull()?.id.orEmpty()
+                if (clienteDocumentoId.isBlank()) {
+                    binding.cardAvisoEnderecoHome.visibility = View.VISIBLE
+                    ajustarEspacoAvisoEndereco(true)
+                    return@addOnSuccessListener
+                }
 
-                binding.cardAvisoEnderecoHome.visibility =
-                    if (enderecoIncompleto) View.VISIBLE else View.GONE
-                ajustarEspacoAvisoEndereco(enderecoIncompleto)
+                FirebaseFirestore.getInstance()
+                    .collection("clientes")
+                    .document(clienteDocumentoId)
+                    .collection("endereco")
+                    .document("principal")
+                    .get()
+                    .addOnSuccessListener { documento ->
+                        val enderecoIncompleto =
+                            !documento.exists() ||
+                                documento.getString("rua").isNullOrBlank() ||
+                                documento.getString("numero").isNullOrBlank() ||
+                                documento.getString("bairro").isNullOrBlank() ||
+                                documento.getString("cidade").isNullOrBlank()
+
+                        binding.cardAvisoEnderecoHome.visibility =
+                            if (enderecoIncompleto) View.VISIBLE else View.GONE
+                        ajustarEspacoAvisoEndereco(enderecoIncompleto)
+                    }
+                    .addOnFailureListener {
+                        binding.cardAvisoEnderecoHome.visibility = View.VISIBLE
+                        ajustarEspacoAvisoEndereco(true)
+                    }
             }
             .addOnFailureListener {
                 binding.cardAvisoEnderecoHome.visibility = View.VISIBLE

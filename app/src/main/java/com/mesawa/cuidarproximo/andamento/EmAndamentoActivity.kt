@@ -117,9 +117,9 @@ class EmAndamentoActivity : BaseActivity() {
         }
 
         val docRef = if (contratacaoOwnerId.isNotBlank()) {
-            firestore.collection("contratacoes")
+            firestore.collection("clientes")
                 .document(contratacaoOwnerId)
-                .collection("pedidos")
+                .collection("contratacoes")
                 .document(contratacaoId)
         } else {
             firestore.collection("contratacoes")

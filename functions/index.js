@@ -76,9 +76,9 @@ function getContratacaoRef(contratacaoId, contratacaoOwnerId = "") {
 
   if (ownerId) {
     return db
-      .collection("contratacoes")
+      .collection("clientes")
       .doc(ownerId)
-      .collection("pedidos")
+      .collection("contratacoes")
       .doc(contratacaoId);
   }
 
