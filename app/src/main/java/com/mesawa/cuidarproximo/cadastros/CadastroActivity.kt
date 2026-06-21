@@ -2,11 +2,11 @@ package com.mesawa.cuidarproximo.cadastros
 
 
 import android.os.Bundle
-import androidx.appcompat.app.AppCompatActivity
+import com.mesawa.cuidarproximo.BaseActivity
 import androidx.lifecycle.ViewModelProvider
 import com.mesawa.cuidarproximo.R
 
-class CadastroActivity : AppCompatActivity() {
+class CadastroActivity : BaseActivity() {
 
     private lateinit var cadastroContaViewModel: CadastroViewModel
 

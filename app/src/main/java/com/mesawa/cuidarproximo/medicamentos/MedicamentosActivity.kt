@@ -10,7 +10,7 @@ import android.view.LayoutInflater
 import android.widget.EditText
 import android.widget.Toast
 import java.util.Calendar
-import androidx.appcompat.app.AppCompatActivity
+import com.mesawa.cuidarproximo.BaseActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.floatingactionbutton.FloatingActionButton
@@ -19,7 +19,7 @@ import com.mesawa.cuidarproximo.R
 import com.mesawa.cuidarproximo.ui.notificacao.MedicamentoReceiver
 import com.mesawa.cuidarproximo.ui.profile.Medicamento
 
-class MedicamentosActivity : AppCompatActivity() {
+class MedicamentosActivity : BaseActivity() {
 
     private lateinit var recyclerMedicamentos: RecyclerView
 

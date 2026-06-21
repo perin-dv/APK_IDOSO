@@ -76,10 +76,8 @@
             android:orientation="vertical"
             android:layout_marginTop="24dp">
 
-            <!-- MEDICAMENTOS -->
-
             <androidx.cardview.widget.CardView
-                android:id="@+id/cardMedicamentos"
+                android:id="@+id/cardEndereco"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="12dp"
@@ -97,7 +95,7 @@
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
-                        android:text="💊 Medicamentos"
+                        android:text="📍 Endereço"
                         android:textSize="17sp"
                         android:textStyle="bold"/>
 
@@ -110,10 +108,8 @@
 
             </androidx.cardview.widget.CardView>
 
-            <!-- SOS -->
-
             <androidx.cardview.widget.CardView
-                android:id="@+id/cardSOS"
+                android:id="@+id/cardAvaliacoes"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="12dp"
@@ -131,7 +127,7 @@
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
-                        android:text="🚨 Contatos SOS"
+                        android:text="⭐ Avaliações"
                         android:textSize="17sp"
                         android:textStyle="bold"/>
 
@@ -143,8 +139,6 @@
                 </LinearLayout>
 
             </androidx.cardview.widget.CardView>
-
-            <!-- PAGAMENTOS -->
 
             <androidx.cardview.widget.CardView
                 android:id="@+id/cardPagamento"
@@ -178,10 +172,8 @@
 
             </androidx.cardview.widget.CardView>
 
-            <!-- IA -->
-
             <androidx.cardview.widget.CardView
-                android:id="@+id/cardIA"
+                android:id="@+id/cardFaleConosco"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="12dp"
@@ -199,7 +191,7 @@
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
-                        android:text="🤖 IA e monitoramento"
+                        android:text="💬 Fale conosco"
                         android:textSize="17sp"
                         android:textStyle="bold"/>
 
@@ -282,7 +274,7 @@
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="IA avançada, monitoramento e alertas"
+                            android:text="Em breve: IA de cuidados, alertas inteligentes e relatórios"
                             android:textSize="13sp"
                             android:textColor="#4B5563"
                             android:layout_marginTop="4dp"/>

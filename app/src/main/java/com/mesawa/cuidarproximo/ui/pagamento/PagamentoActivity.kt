@@ -4,15 +4,18 @@ import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.util.Log
+import android.view.View
+import android.widget.LinearLayout
+import android.widget.ProgressBar
 import android.widget.TextView
 import android.widget.Toast
-import androidx.appcompat.app.AppCompatActivity
+import com.mesawa.cuidarproximo.BaseActivity
 import androidx.cardview.widget.CardView
 import com.google.firebase.functions.FirebaseFunctions
 import com.mesawa.cuidarproximo.R
 import com.mesawa.cuidarproximo.ui.andamento.EmAndamentoActivity
 
-class PagamentoActivity : AppCompatActivity() {
+class PagamentoActivity : BaseActivity() {
 
     private lateinit var txtCuidador: TextView
     private lateinit var txtHoras: TextView
@@ -20,8 +23,12 @@ class PagamentoActivity : AppCompatActivity() {
 
     private lateinit var cardPix: CardView
     private lateinit var cardCartao: CardView
+    private lateinit var layoutStatusPagamento: LinearLayout
+    private lateinit var progressoPagamento: ProgressBar
+    private lateinit var txtStatusPagamento: TextView
 
     private var contratacaoId: String = ""
+    private var contratacaoOwnerId: String = ""
     private var valorTotal: Double = 0.0
     private var cuidadorNome: String = ""
     private var horas: Int = 0
@@ -40,9 +47,13 @@ class PagamentoActivity : AppCompatActivity() {
         txtTotal = findViewById(R.id.txtTotalPagamento)
         cardPix = findViewById(R.id.cardPix)
         cardCartao = findViewById(R.id.cardCartao)
+        layoutStatusPagamento = findViewById(R.id.layoutStatusPagamento)
+        progressoPagamento = findViewById(R.id.progressoPagamento)
+        txtStatusPagamento = findViewById(R.id.txtStatusPagamento)
 
         // Dados recebidos
         contratacaoId = intent.getStringExtra("contratacaoId") ?: ""
+        contratacaoOwnerId = intent.getStringExtra("contratacaoOwnerId") ?: ""
         valorTotal = intent.getDoubleExtra("valor", 0.0)
         cuidadorNome = intent.getStringExtra("cuidadorNome") ?: "Cuidador"
         horas = intent.getIntExtra("horas", 1)
@@ -78,28 +89,32 @@ class PagamentoActivity : AppCompatActivity() {
             return
         }
 
-        setProcessando(true)
+        setProcessando(true, "Gerando PIX...")
         Log.d("PagamentoActivity", "Gerando PIX contratacaoId=$contratacaoId")
 
         functions.getHttpsCallable("criarPagamentoMarketplace")
             .call(
                 mapOf(
-                    "contratacaoId" to contratacaoId
+                    "contratacaoId" to contratacaoId,
+                    "contratacaoOwnerId" to contratacaoOwnerId
                 )
             )
             .addOnSuccessListener { result ->
                 val data = result.data as? Map<*, *>
                 val paymentId = data?.get("paymentId")?.toString()
-                val qrBase64 = data?.get("qr_base64") as? String
-                val qrString = data?.get("qr_string") as? String
+                val qrBase64 = data?.get("qr_base64")?.toString()
+                val qrString = data?.get("qr_string")?.toString()
+                val status = data?.get("status")?.toString()
+                val reutilizado = data?.get("reutilizado")?.toString()
                 Log.d(
                     "PagamentoActivity",
-                    "Resposta PIX paymentId=$paymentId temQr=${!qrBase64.isNullOrEmpty()}"
+                    "Resposta PIX paymentId=$paymentId status=$status reutilizado=$reutilizado temQr=${!qrBase64.isNullOrEmpty()} temCodigo=${!qrString.isNullOrEmpty()}"
                 )
 
                 if (!qrBase64.isNullOrEmpty() && !qrString.isNullOrEmpty()) {
                     val intent = Intent(this, PagamentoPixActivity::class.java)
                     intent.putExtra("contratacaoId", contratacaoId)
+                    intent.putExtra("contratacaoOwnerId", contratacaoOwnerId)
                     intent.putExtra("paymentId", paymentId)
                     intent.putExtra("valor", valorTotal)
                     intent.putExtra("cuidadorNome", cuidadorNome)
@@ -107,9 +122,10 @@ class PagamentoActivity : AppCompatActivity() {
                     intent.putExtra("qr_string", qrString)
                     startActivity(intent)
                 } else {
+                    Log.e("PagamentoActivity", "Resposta PIX sem QR: $data")
                     Toast.makeText(
                         this,
-                        "Mercado Pago não retornou QR Code PIX",
+                        "Mercado Pago não retornou o QR Code PIX. Tente novamente.",
                         Toast.LENGTH_LONG
                     ).show()
                 }
@@ -117,7 +133,12 @@ class PagamentoActivity : AppCompatActivity() {
                 setProcessando(false)
             }
             .addOnFailureListener {
-                Toast.makeText(this, "Erro ao gerar PIX: ${it.message}", Toast.LENGTH_LONG).show()
+                Log.e("PagamentoActivity", "Erro ao gerar PIX", it)
+                Toast.makeText(
+                    this,
+                    "Erro ao gerar PIX: ${it.message ?: "verifique os logs"}",
+                    Toast.LENGTH_LONG
+                ).show()
                 setProcessando(false)
             }
     }
@@ -130,21 +151,23 @@ class PagamentoActivity : AppCompatActivity() {
             return
         }
 
-        setProcessando(true)
+        setProcessando(true, "Abrindo cartão...")
         Log.d("PagamentoActivity", "Gerando checkout cartao contratacaoId=$contratacaoId")
 
         functions.getHttpsCallable("criarCheckoutCartaoContratacao")
             .call(
                 mapOf(
-                    "contratacaoId" to contratacaoId
+                    "contratacaoId" to contratacaoId,
+                    "contratacaoOwnerId" to contratacaoOwnerId
                 )
             )
             .addOnSuccessListener { result ->
                 val data = result.data as? Map<*, *>
-                val initPoint = data?.get("init_point") as? String
+                val initPoint = data?.get("init_point")?.toString()
+                val sandbox = data?.get("sandbox")?.toString()
                 Log.d(
                     "PagamentoActivity",
-                    "Resposta cartao temInitPoint=${!initPoint.isNullOrBlank()}"
+                    "Resposta cartao sandbox=$sandbox temInitPoint=${!initPoint.isNullOrBlank()}"
                 )
 
                 if (!initPoint.isNullOrBlank()) {
@@ -168,12 +191,14 @@ class PagamentoActivity : AppCompatActivity() {
 
         val resultado = data.getQueryParameter("resultado")
         val idRetorno = data.getQueryParameter("contratacaoId").orEmpty()
+        val ownerRetorno = data.getQueryParameter("contratacaoOwnerId").orEmpty()
 
         if (resultado.isNullOrBlank() || idRetorno.isBlank()) {
             return false
         }
 
         contratacaoId = idRetorno
+        if (ownerRetorno.isNotBlank()) contratacaoOwnerId = ownerRetorno
         txtCuidador.text = "Validando pagamento"
         txtHoras.text = "-"
         txtTotal.text = "-"
@@ -209,6 +234,7 @@ class PagamentoActivity : AppCompatActivity() {
             .call(
                 mapOf(
                     "contratacaoId" to idRetorno,
+                    "contratacaoOwnerId" to contratacaoOwnerId,
                     "paymentId" to paymentId
                 )
             )
@@ -217,6 +243,7 @@ class PagamentoActivity : AppCompatActivity() {
                 startActivity(
                     Intent(this, EmAndamentoActivity::class.java)
                         .putExtra("contratacaoId", idRetorno)
+                        .putExtra("contratacaoOwnerId", contratacaoOwnerId)
                 )
                 finish()
             }
@@ -229,16 +256,22 @@ class PagamentoActivity : AppCompatActivity() {
             }
     }
 
-    private fun setProcessando(processando: Boolean) {
+    private fun setProcessando(processando: Boolean, mensagem: String = "") {
         processandoPagamento = processando
         cardPix.isEnabled = !processando
         cardCartao.isEnabled = !processando
+        layoutStatusPagamento.visibility = if (processando) View.VISIBLE else View.GONE
+        progressoPagamento.visibility = if (processando) View.VISIBLE else View.GONE
+        if (mensagem.isNotBlank()) {
+            txtStatusPagamento.text = mensagem
+        }
     }
 
     private fun abrirCheckoutWeb(url: String) {
         Log.d("PagamentoActivity", "Abrindo checkout web url=$url")
         val intent = Intent(this, PagamentoCartaoActivity::class.java).apply {
             putExtra("contratacaoId", contratacaoId)
+            putExtra("contratacaoOwnerId", contratacaoOwnerId)
             putExtra("valor", valorTotal)
             putExtra("cuidadorNome", cuidadorNome)
             putExtra("init_point", url)

@@ -1,17 +1,17 @@
 package com.mesawa.cuidarproximo.ui.home
 
 import android.os.Bundle
-import androidx.appcompat.app.AppCompatActivity
+import com.mesawa.cuidarproximo.BaseActivity
 import androidx.fragment.app.Fragment
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.mesawa.cuidarproximo.R
-import com.mesawa.cuidarproximo.ui.agenda.AgendaFragment
+import com.mesawa.cuidarproximo.ui.acompanhamento.AcompanhamentoFragment
 import com.mesawa.cuidarproximo.ui.home.fragments.ProfileFragment
 import com.mesawa.cuidarproximo.ui.home.fragments.SettingsFragment
-import com.mesawa.cuidarproximo.ui.sos.SosFragment
 import com.mesawa.cuidarproximo.ui.home.fragments.SearchFragment
+import com.mesawa.cuidarproximo.ui.pedidos.PedidosFragment
 
-class HomeActivity : AppCompatActivity() {
+class HomeActivity : BaseActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -35,10 +35,10 @@ class HomeActivity : AppCompatActivity() {
 
                 R.id.navigation_profile -> replaceFragment(ProfileFragment())
 
-                R.id.navigation_sos -> replaceFragment(SosFragment())
+                R.id.navigation_cuidado -> replaceFragment(AcompanhamentoFragment())
 
 
-                R.id.navigation_agenda -> replaceFragment(AgendaFragment())
+                R.id.navigation_pedidos -> replaceFragment(PedidosFragment())
 
                 R.id.navigation_buscar -> replaceFragment(SearchFragment())
 

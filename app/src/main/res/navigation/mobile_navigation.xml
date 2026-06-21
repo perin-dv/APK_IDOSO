@@ -26,12 +26,17 @@
         android:label="@string/title_notifications"
         tools:layout="@layout/fragment_notifications" />
 
-    <!-- SOS Fragment -->
     <fragment
-        android:id="@+id/navigation_sos"
-        android:name="com.mesawa.cuidarproximo.ui.sos.SosFragment"
-        android:label="SOS Emergência"
-        tools:layout="@layout/fragment_sos" />
+        android:id="@+id/navigation_cuidado"
+        android:name="com.mesawa.cuidarproximo.ui.acompanhamento.AcompanhamentoFragment"
+        android:label="Acompanhamento"
+        tools:layout="@layout/fragment_acompanhamento" />
+
+    <fragment
+        android:id="@+id/navigation_pedidos"
+        android:name="com.mesawa.cuidarproximo.ui.pedidos.PedidosFragment"
+        android:label="Pedidos"
+        tools:layout="@layout/fragment_pedidos" />
 
 
 

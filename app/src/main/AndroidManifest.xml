@@ -41,7 +41,7 @@
         <activity
             android:name="com.mesawa.cuidarproximo.splash.SplashActivity"
             android:exported="true"
-            android:theme="@style/Theme.AppCompat.Light.NoActionBar"
+            android:theme="@style/Theme.CuidarProximo.NoActionBar"
             android:label="@string/app_name">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -53,6 +53,11 @@
         <activity
             android:name=".ui.home.HomeActivity"
             android:exported="true"
+            android:label="@string/app_name" />
+
+        <activity
+            android:name=".ui.home.SaudeConteudoActivity"
+            android:exported="false"
             android:label="@string/app_name" />
 
 
@@ -104,31 +109,55 @@
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
 
-                <data
-                    android:scheme="cuidarproximo"
-                    android:host="pagamento"
-                    android:pathPrefix="/sucesso" />
-                <data
-                    android:scheme="cuidarproximo"
-                    android:host="pagamento"
-                    android:pathPrefix="/erro" />
-                <data
-                    android:scheme="cuidarproximo"
-                    android:host="pagamento"
-                    android:pathPrefix="/pendente" />
+                <data android:scheme="cuidarproximo" />
+                <data android:host="pagamento" />
+                <data android:pathPrefix="/sucesso" />
+
+                <data android:scheme="cuidarproximo" />
+                <data android:host="pagamento" />
+                <data android:pathPrefix="/erro" />
+
+                <data android:scheme="cuidarproximo" />
+                <data android:host="pagamento" />
+                <data android:pathPrefix="/pendente" />
             </intent-filter>
 
         </activity>
 
         <activity
-            android:name=".ui.andamento.EmAndamentoActivity"
+            android:name=".ui.pagamento.HistoricoPagamentosActivity"
             android:exported="false"
             android:label="@string/app_name" />
 
+        <activity
+            android:name=".ui.profile.EnderecoIdosoActivity"
+            android:exported="false"
+            android:label="@string/app_name" />
 
         <activity
-            android:name=".ui.sos.SOSContactsActivity"/>
+            android:name=".ui.profile.AvaliacoesActivity"
+            android:exported="false"
+            android:label="@string/app_name" />
 
+        <activity
+            android:name=".ui.profile.FaleConoscoActivity"
+            android:exported="false"
+            android:label="@string/app_name" />
+
+        <activity
+            android:name=".ui.profile.ConfiguracoesActivity"
+            android:exported="false"
+            android:label="@string/app_name" />
+
+        <activity
+            android:name=".ui.profile.PremiumActivity"
+            android:exported="false"
+            android:label="@string/app_name" />
+
+        <activity
+            android:name=".ui.andamento.EmAndamentoActivity"
+            android:exported="false"
+            android:label="@string/app_name" />
 
         <activity
             android:name="com.mesawa.cuidarproximo.ui.home.LoginActivity"

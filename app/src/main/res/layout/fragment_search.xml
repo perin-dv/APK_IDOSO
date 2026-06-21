@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
-
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#F5F7FA">
+    android:background="#F4F8FB"
+    android:clipToPadding="false">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -12,160 +12,178 @@
         android:orientation="vertical"
         android:padding="16dp">
 
-        <!-- TÍTULO -->
-
-        <TextView
-            android:layout_width="wrap_content"
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Buscar profissionais"
-            android:textSize="26sp"
-            android:textStyle="bold"
-            android:textColor="#000000" />
+            android:background="#DDF5F6"
+            android:orientation="vertical"
+            android:padding="18dp">
 
-        <!-- CAMPO BUSCA -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Buscar cuidado"
+                android:textColor="#0F2F3D"
+                android:textSize="29sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/txtResumoBusca"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="6dp"
+                android:text="Encontre o profissional certo para seu idoso"
+                android:textColor="#40606D"
+                android:textSize="14sp" />
+
+        </LinearLayout>
 
         <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/inputSearchLayout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
-            app:boxCornerRadiusTopStart="20dp"
-            app:boxCornerRadiusTopEnd="20dp"
-            app:boxCornerRadiusBottomStart="20dp"
-            app:boxCornerRadiusBottomEnd="20dp">
+            app:boxBackgroundColor="#FFFFFF"
+            app:boxCornerRadiusBottomEnd="22dp"
+            app:boxCornerRadiusBottomStart="22dp"
+            app:boxCornerRadiusTopEnd="22dp"
+            app:boxCornerRadiusTopStart="22dp"
+            app:boxStrokeColor="#10B7C4"
+            app:endIconMode="clear_text"
+            app:startIconDrawable="@drawable/ic_search">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/editSearch"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="Buscar médico, cuidador..."
-                android:padding="14dp" />
+                android:hint="Nome, especialidade, Alzheimer, fisioterapia..."
+                android:imeOptions="actionSearch"
+                android:inputType="text"
+                android:padding="14dp"
+                android:textColor="#111827"
+                android:textSize="15sp" />
 
         </com.google.android.material.textfield.TextInputLayout>
-
-        <!-- CATEGORIAS -->
 
         <HorizontalScrollView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
+            android:layout_marginTop="14dp"
             android:scrollbars="none">
 
             <LinearLayout
+                android:id="@+id/layoutBarraFiltros"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal">
 
-                <com.google.android.material.chip.Chip
+                <TextView
+                    android:id="@+id/btnFiltroCategoria"
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="🩺 Médicos" />
+                    android:layout_height="42dp"
+                    android:background="@drawable/bg_pill_blue"
+                    android:gravity="center"
+                    android:paddingHorizontal="16dp"
+                    android:text="Categoria"
+                    android:textColor="#085EAA"
+                    android:textSize="14sp"
+                    android:textStyle="bold" />
 
-                <com.google.android.material.chip.Chip
+                <TextView
+                    android:id="@+id/btnFiltroAvancado"
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="🧑‍⚕️ Cuidadores"
-                    android:layout_marginStart="8dp" />
+                    android:layout_height="42dp"
+                    android:layout_marginStart="10dp"
+                    android:background="@drawable/bg_pill_light"
+                    android:gravity="center"
+                    android:paddingHorizontal="16dp"
+                    android:text="Filtros"
+                    android:textColor="#111827"
+                    android:textSize="14sp"
+                    android:textStyle="bold" />
 
-                <com.google.android.material.chip.Chip
+                <TextView
+                    android:id="@+id/btnFiltroOrdenar"
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="🧠 Psicólogos"
-                    android:layout_marginStart="8dp" />
-
-                <com.google.android.material.chip.Chip
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="🦴 Fisioterapia"
-                    android:layout_marginStart="8dp" />
+                    android:layout_height="42dp"
+                    android:layout_marginStart="10dp"
+                    android:background="@drawable/bg_pill_light"
+                    android:gravity="center"
+                    android:paddingHorizontal="16dp"
+                    android:text="Ordenar"
+                    android:textColor="#111827"
+                    android:textSize="14sp"
+                    android:textStyle="bold" />
 
             </LinearLayout>
 
         </HorizontalScrollView>
 
-        <!-- PROFISSIONAL -->
-
         <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Profissionais próximos"
-            android:textSize="20sp"
-            android:textStyle="bold"
-            android:textColor="#000000"
-            android:layout_marginTop="24dp"
-            android:layout_marginBottom="12dp" />
-
-        <!-- CARD 1 -->
-
-        <androidx.cardview.widget.CardView
+            android:id="@+id/txtFiltrosAtivos"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:cardCornerRadius="20dp"
-            app:cardElevation="4dp">
+            android:layout_marginTop="9dp"
+            android:text="Todos os profissionais • Relevancia"
+            android:textColor="#64748B"
+            android:textSize="13sp" />
+
+        <TextView
+            android:id="@+id/txtTituloResultados"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="18dp"
+            android:layout_marginBottom="12dp"
+            android:text="Profissionais encontrados"
+            android:textColor="#111827"
+            android:textSize="20sp"
+            android:textStyle="bold" />
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recyclerResultados"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:nestedScrollingEnabled="false" />
+
+        <androidx.cardview.widget.CardView
+            android:id="@+id/cardSemResultados"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:visibility="gone"
+            app:cardBackgroundColor="#E7F6F7"
+            app:cardCornerRadius="24dp"
+            app:cardElevation="2dp">
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:padding="16dp">
+                android:gravity="center_horizontal"
+                android:orientation="vertical"
+                android:padding="22dp">
 
                 <ImageView
-                    android:layout_width="80dp"
-                    android:layout_height="80dp"
-                    android:src="@drawable/ic_profile"
-                    android:background="@drawable/circle_background"
-                    android:padding="8dp" />
+                    android:layout_width="128dp"
+                    android:layout_height="128dp"
+                    android:src="@drawable/logo"
+                    android:contentDescription="Sem resultados" />
 
-                <LinearLayout
-                    android:layout_width="0dp"
+                <TextView
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:orientation="vertical"
-                    android:layout_marginStart="16dp">
+                    android:text="Nenhum profissional encontrado"
+                    android:textColor="#0F2F3D"
+                    android:textSize="20sp"
+                    android:textStyle="bold" />
 
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Dr João Silva"
-                        android:textSize="19sp"
-                        android:textStyle="bold" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="🩺 Médico Geriatra"
-                        android:textSize="14sp"
-                        android:layout_marginTop="4dp" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="⭐ 4.9 • 320 atendimentos"
-                        android:textSize="13sp"
-                        android:layout_marginTop="4dp" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="⏳ 8 anos experiência"
-                        android:textSize="13sp"
-                        android:layout_marginTop="4dp" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="💰 R$120/h"
-                        android:textSize="15sp"
-                        android:textStyle="bold"
-                        android:textColor="#2E7D32"
-                        android:layout_marginTop="6dp" />
-
-                    <Button
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Ver Perfil"
-                        android:layout_marginTop="10dp" />
-
-                </LinearLayout>
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="6dp"
+                    android:gravity="center"
+                    android:text="Tente buscar por cuidador, Alzheimer, fisioterapia, cidade ou reduza os filtros."
+                    android:textColor="#40606D"
+                    android:textSize="14sp" />
 
             </LinearLayout>
 

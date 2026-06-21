@@ -11,17 +11,18 @@ import android.os.Looper
 import android.util.Base64
 import android.util.Log
 import android.widget.Toast
-import androidx.appcompat.app.AppCompatActivity
+import com.mesawa.cuidarproximo.BaseActivity
 import com.google.firebase.functions.FirebaseFunctions
 import com.mesawa.cuidarproximo.databinding.ActivityPagamentoPixBinding
 import com.mesawa.cuidarproximo.ui.andamento.EmAndamentoActivity
 
-class PagamentoPixActivity : AppCompatActivity() {
+class PagamentoPixActivity : BaseActivity() {
 
     private lateinit var binding: ActivityPagamentoPixBinding
     private lateinit var functions: FirebaseFunctions
 
     private var contratacaoId: String = ""
+    private var contratacaoOwnerId: String = ""
 
     private val handler = Handler(Looper.getMainLooper())
     private var verificandoPagamento = false
@@ -44,6 +45,7 @@ class PagamentoPixActivity : AppCompatActivity() {
         supportActionBar?.hide()
 
         contratacaoId = intent.getStringExtra("contratacaoId") ?: ""
+        contratacaoOwnerId = intent.getStringExtra("contratacaoOwnerId") ?: ""
 
         val qrBase64 = intent.getStringExtra("qr_base64")
         val qrString = intent.getStringExtra("qr_string")
@@ -116,7 +118,8 @@ class PagamentoPixActivity : AppCompatActivity() {
 
         val data =
             hashMapOf(
-                "contratacaoId" to contratacaoId
+                "contratacaoId" to contratacaoId,
+                "contratacaoOwnerId" to contratacaoOwnerId
             )
 
         functions
@@ -158,7 +161,8 @@ class PagamentoPixActivity : AppCompatActivity() {
             .getHttpsCallable("confirmarPagamentoContratacao")
             .call(
                 mapOf(
-                    "contratacaoId" to contratacaoId
+                    "contratacaoId" to contratacaoId,
+                    "contratacaoOwnerId" to contratacaoOwnerId
                 )
             )
 
@@ -174,7 +178,9 @@ class PagamentoPixActivity : AppCompatActivity() {
                     android.content.Intent(
                         this,
                         EmAndamentoActivity::class.java
-                    ).putExtra("contratacaoId", contratacaoId)
+                    )
+                        .putExtra("contratacaoId", contratacaoId)
+                        .putExtra("contratacaoOwnerId", contratacaoOwnerId)
                 )
 
                 finish()

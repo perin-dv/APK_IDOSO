@@ -12,15 +12,14 @@
         android:title="Buscar" />
 
     <item
-        android:id="@+id/navigation_agenda"
-        android:icon="@drawable/ic_calendar"
-        android:title="Agenda" />
+        android:id="@+id/navigation_pedidos"
+        android:icon="@drawable/ic_pedidos"
+        android:title="Pedidos" />
 
     <item
-        android:id="@+id/navigation_sos"
-        android:icon="@drawable/ic_sos"
-        android:fillColor="#FF0000"
-        android:title="SOS" />
+        android:id="@+id/navigation_cuidado"
+        android:icon="@drawable/ic_cuidado"
+        android:title="Cuidado" />
 
     <item
         android:id="@+id/navigation_profile"

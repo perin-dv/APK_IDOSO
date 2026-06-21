@@ -4,7 +4,7 @@ import android.content.Intent
 import android.os.Bundle
 import android.widget.TextView
 import android.widget.Toast
-import androidx.appcompat.app.AppCompatActivity
+import com.mesawa.cuidarproximo.BaseActivity
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.textfield.TextInputEditText
 import com.google.firebase.auth.FirebaseAuth
@@ -17,7 +17,7 @@ import java.util.Date
 import java.util.Locale
 import kotlin.math.abs
 
-class ContratacaoActivity : AppCompatActivity() {
+class ContratacaoActivity : BaseActivity() {
 
     private lateinit var btnContratar: MaterialButton
     private lateinit var txtHoras: TextView
@@ -68,6 +68,7 @@ class ContratacaoActivity : AppCompatActivity() {
         txtValorHora.text = "R$ %.2f/h".format(valorHora)
 
         atualizarValores()
+        carregarEnderecoCadastrado()
 
         btnMais.setOnClickListener {
             horas++
@@ -90,6 +91,51 @@ class ContratacaoActivity : AppCompatActivity() {
         txtHoras.text = horas.toString()
         val total = horas * valorHora
         txtTotal.text = "R$ %.2f".format(total)
+    }
+
+    private fun carregarEnderecoCadastrado() {
+        val userId = auth.currentUser?.uid ?: return
+
+        buscarClienteDocumentoId(userId) { clienteDocumentoId ->
+            if (clienteDocumentoId.isBlank()) return@buscarClienteDocumentoId
+
+            firestore.collection("clientes")
+                .document(clienteDocumentoId)
+                .collection("endereco")
+                .document("principal")
+                .get()
+                .addOnSuccessListener { doc ->
+                    if (!doc.exists()) return@addOnSuccessListener
+
+                    val rua = doc.getString("rua").orEmpty().trim()
+                    val numero = doc.getString("numero").orEmpty().trim()
+                    val bairro = doc.getString("bairro").orEmpty().trim()
+                    val cidade = doc.getString("cidade").orEmpty().trim()
+                    val referencia = doc.getString("referencia").orEmpty().trim()
+                    val observacoes = doc.getString("observacoes").orEmpty().trim()
+
+                    val endereco = listOfNotNull(
+                        rua.takeIf { it.isNotBlank() }?.let {
+                            if (numero.isNotBlank()) "$it, $numero" else it
+                        },
+                        bairro.takeIf { it.isNotBlank() },
+                        cidade.takeIf { it.isNotBlank() }
+                    ).joinToString(" - ")
+
+                    if (endereco.isNotBlank()) {
+                        editEndereco.setText(endereco)
+                    }
+
+                    val detalhes = listOfNotNull(
+                        referencia.takeIf { it.isNotBlank() }?.let { "Referencia: $it" },
+                        observacoes.takeIf { it.isNotBlank() }
+                    ).joinToString("\n")
+
+                    if (detalhes.isNotBlank() && editObs.text.isNullOrBlank()) {
+                        editObs.setText(detalhes)
+                    }
+                }
+        }
     }
 
     private fun criarContratacao() {
@@ -166,11 +212,17 @@ class ContratacaoActivity : AppCompatActivity() {
         val valorLiquidoCuidador = valorTotal - valorComissao
 
         val contratacaoId = gerarContratacaoId(userId, endereco, idosoNome)
-        val docRef = firestore.collection("contratacoes").document(contratacaoId)
+        val clienteContratacaoId = clienteDocumentoId.ifBlank { userId }
+        val docRef = firestore.collection("clientes")
+            .document(clienteContratacaoId)
+            .collection("contratacoes")
+            .document(contratacaoId)
 
         val dados = hashMapOf<String, Any?>(
             "id" to contratacaoId,
             "codigoContratacao" to contratacaoId,
+            "contratacaoOwnerId" to clienteContratacaoId,
+            "clienteDocId" to clienteContratacaoId,
             "clienteId" to userId,
             "clienteDocumentoId" to clienteDocumentoId,
             "clienteNome" to clienteNome,
@@ -196,7 +248,9 @@ class ContratacaoActivity : AppCompatActivity() {
             .addOnSuccessListener {
                 val docParaSalvar =
                     if (it.exists() && it.getString("pagamentoStatus") == "approved") {
-                        firestore.collection("contratacoes")
+                        firestore.collection("clientes")
+                            .document(clienteContratacaoId)
+                            .collection("contratacoes")
                             .document("${contratacaoId}-${gerarSufixoHorario()}")
                     } else {
                         docRef
@@ -220,6 +274,7 @@ class ContratacaoActivity : AppCompatActivity() {
 
                         abrirPagamento(
                             contratacaoId = idFinal,
+                            contratacaoOwnerId = clienteContratacaoId,
                             valor = valorTotal,
                             cuidadorNome = nomeProfissional
                         )
@@ -255,16 +310,32 @@ class ContratacaoActivity : AppCompatActivity() {
 
     private fun abrirPagamento(
         contratacaoId: String,
+        contratacaoOwnerId: String,
         valor: Double,
         cuidadorNome: String
     ) {
         val intent = Intent(this, PagamentoActivity::class.java).apply {
             putExtra("contratacaoId", contratacaoId)
+            putExtra("contratacaoOwnerId", contratacaoOwnerId)
             putExtra("valor", valor)
             putExtra("cuidadorNome", cuidadorNome)
+            putExtra("horas", horas)
         }
 
         startActivity(intent)
         finish()
+    }
+
+    private fun buscarClienteDocumentoId(userId: String, callback: (String) -> Unit) {
+        firestore.collection("clientes")
+            .whereEqualTo("sistema.uid_auth", userId)
+            .limit(1)
+            .get()
+            .addOnSuccessListener { query ->
+                callback(query.documents.firstOrNull()?.id.orEmpty())
+            }
+            .addOnFailureListener {
+                callback("")
+            }
     }
 }

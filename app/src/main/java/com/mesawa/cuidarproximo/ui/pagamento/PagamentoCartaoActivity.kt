@@ -1,7 +1,6 @@
 package com.mesawa.cuidarproximo.ui.pagamento
 
 import android.content.Intent
-import android.graphics.Color
 import android.net.Uri
 import android.os.Bundle
 import android.util.Log
@@ -15,16 +14,17 @@ import android.webkit.WebSettings
 import android.webkit.WebView
 import android.webkit.WebViewClient
 import android.webkit.RenderProcessGoneDetail
-import androidx.appcompat.app.AppCompatActivity
+import com.mesawa.cuidarproximo.BaseActivity
 import com.google.firebase.functions.FirebaseFunctions
 import com.mesawa.cuidarproximo.databinding.ActivityPagamentoCartaoBinding
 import com.mesawa.cuidarproximo.ui.andamento.EmAndamentoActivity
 
-class PagamentoCartaoActivity : AppCompatActivity() {
+class PagamentoCartaoActivity : BaseActivity() {
 
     private lateinit var binding: ActivityPagamentoCartaoBinding
     private lateinit var functions: FirebaseFunctions
     private var contratacaoId: String = ""
+    private var contratacaoOwnerId: String = ""
     private var confirmandoPagamento = false
     private var initPoint: String = ""
     private var ultimoUrl: String = ""
@@ -34,10 +34,6 @@ class PagamentoCartaoActivity : AppCompatActivity() {
         binding = ActivityPagamentoCartaoBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        // Toolbar
-        window.statusBarColor = Color.WHITE
-        window.navigationBarColor = Color.WHITE
-        window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR
         binding.toolbarCartao.setNavigationIcon(androidx.appcompat.R.drawable.abc_ic_ab_back_material)
         binding.toolbarCartao.setNavigationOnClickListener {
             onBackPressedDispatcher.onBackPressed()
@@ -275,6 +271,7 @@ class PagamentoCartaoActivity : AppCompatActivity() {
             .call(
                 mapOf(
                     "contratacaoId" to contratacaoId,
+                    "contratacaoOwnerId" to contratacaoOwnerId,
                     "paymentId" to paymentId
                 )
             )
@@ -282,6 +279,7 @@ class PagamentoCartaoActivity : AppCompatActivity() {
                 startActivity(
                     Intent(this, EmAndamentoActivity::class.java)
                         .putExtra("contratacaoId", contratacaoId)
+                        .putExtra("contratacaoOwnerId", contratacaoOwnerId)
                 )
                 finish()
             }
@@ -305,6 +303,11 @@ class PagamentoCartaoActivity : AppCompatActivity() {
             intent?.getStringExtra("contratacaoId")
                 ?: intent?.data?.getQueryParameter("contratacaoId")
                 ?: contratacaoId
+
+        contratacaoOwnerId =
+            intent?.getStringExtra("contratacaoOwnerId")
+                ?: intent?.data?.getQueryParameter("contratacaoOwnerId")
+                ?: contratacaoOwnerId
 
         initPoint =
             intent?.getStringExtra("init_point")

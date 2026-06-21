@@ -5,14 +5,14 @@ import android.os.Bundle
 import android.os.Handler
 import android.view.animation.AnimationUtils
 import android.widget.ImageView
-import androidx.appcompat.app.AppCompatActivity
+import com.mesawa.cuidarproximo.BaseActivity
 import com.google.firebase.auth.FirebaseAuth
 import com.mesawa.cuidarproximo.R
 import com.mesawa.cuidarproximo.ui.home.HomeActivity
 
 import com.mesawa.cuidarproximo.ui.home.LoginActivity
 
-class SplashActivity : AppCompatActivity() {
+class SplashActivity : BaseActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

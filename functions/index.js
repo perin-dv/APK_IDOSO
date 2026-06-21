@@ -14,7 +14,7 @@ const FieldValue = admin.firestore.FieldValue;
 
 const mpToken = defineSecret("MP_ACCESS_TOKEN");
 
-function getClient() {
+function getMpToken() {
   const token = String(mpToken.value() || "").trim();
 
   if (
@@ -27,6 +27,12 @@ function getClient() {
       "MP_ACCESS_TOKEN inválido. Configure o Access Token puro do Mercado Pago, começando com TEST- ou APP_USR-."
     );
   }
+
+  return token;
+}
+
+function getClient() {
+  const token = getMpToken();
 
   return new MercadoPagoConfig({
     accessToken: token,
@@ -63,6 +69,20 @@ function dataDocumento() {
 
 function pagamentoDocId(prefixo, id) {
   return `${dataDocumento()}_${prefixo}_${String(id).replace(/[^\w-]/g, "")}`;
+}
+
+function getContratacaoRef(contratacaoId, contratacaoOwnerId = "") {
+  const ownerId = String(contratacaoOwnerId || "").trim();
+
+  if (ownerId) {
+    return db
+      .collection("contratacoes")
+      .doc(ownerId)
+      .collection("pedidos")
+      .doc(contratacaoId);
+  }
+
+  return db.collection("contratacoes").doc(contratacaoId);
 }
 
 async function salvarTentativaPagamento(contratacaoRef, docId, dados) {
@@ -131,6 +151,7 @@ function isErroCredencialMercadoPago(error) {
 
 async function criarCheckoutContratacao({
   contratacaoId,
+  contratacaoOwnerId = "",
   contratacao,
   metodoPreferido = "cartao",
 }) {
@@ -152,15 +173,16 @@ async function criarCheckoutContratacao({
       external_reference: contratacaoId,
       metadata: {
         contratacaoId,
+        contratacaoOwnerId,
         splitEmpresaPercentual: 9,
         splitCuidadorPercentual: 91,
       },
       notification_url:
         "https://us-central1-cuidar-proximo-e6d51.cloudfunctions.net/webhookMercadoPago",
       back_urls: {
-        success: `cuidarproximo://pagamento/cartao?resultado=sucesso&contratacaoId=${contratacaoId}`,
-        failure: `cuidarproximo://pagamento/cartao?resultado=erro&contratacaoId=${contratacaoId}`,
-        pending: `cuidarproximo://pagamento/cartao?resultado=pendente&contratacaoId=${contratacaoId}`,
+        success: `cuidarproximo://pagamento/cartao?resultado=sucesso&contratacaoId=${contratacaoId}&contratacaoOwnerId=${contratacaoOwnerId}`,
+        failure: `cuidarproximo://pagamento/cartao?resultado=erro&contratacaoId=${contratacaoId}&contratacaoOwnerId=${contratacaoOwnerId}`,
+        pending: `cuidarproximo://pagamento/cartao?resultado=pendente&contratacaoId=${contratacaoId}&contratacaoOwnerId=${contratacaoOwnerId}`,
       },
       auto_return: "approved",
   };
@@ -174,17 +196,32 @@ async function criarCheckoutContratacao({
       ],
       installments: 1,
     };
+  } else if (metodoPreferido === "cartao") {
+    body.payment_methods = {
+      excluded_payment_types: [
+        { id: "bank_transfer" },
+        { id: "ticket" },
+        { id: "atm" },
+      ],
+      installments: 1,
+    };
   }
 
   const response = await preference.create({ body });
+  const token = getMpToken();
+  const checkoutUrl =
+    token.startsWith("TEST-") && response?.sandbox_init_point
+      ? response.sandbox_init_point
+      : response?.init_point;
 
-  if (!response?.id || !response?.init_point) {
+  if (!response?.id || !checkoutUrl) {
     throw new Error("Falha ao criar checkout Mercado Pago");
   }
 
   return {
     preferenceId: String(response.id),
-    initPoint: response.init_point,
+    initPoint: checkoutUrl,
+    sandbox: checkoutUrl === response.sandbox_init_point,
     valorComissao,
     valorLiquidoCuidador,
   };
@@ -192,6 +229,7 @@ async function criarCheckoutContratacao({
 
 async function confirmarPagamentoReal({
   contratacaoId,
+  contratacaoOwnerId = "",
   paymentId,
   uid = null,
   metodoPagamento,
@@ -215,7 +253,7 @@ async function confirmarPagamentoReal({
     );
   }
 
-  const contratacaoRef = db.collection("contratacoes").doc(contratacaoId);
+  const contratacaoRef = getContratacaoRef(contratacaoId, contratacaoOwnerId);
 
   await db.runTransaction(async (transaction) => {
     const contratacaoSnap = await transaction.get(contratacaoRef);
@@ -348,8 +386,9 @@ exports.criarPagamentoMarketplace = onCall(
         request.data?.contratacaoId,
         "contratacaoId"
       );
+      const contratacaoOwnerId = String(request.data?.contratacaoOwnerId || "").trim();
 
-      const contratacaoRef = db.collection("contratacoes").doc(contratacaoId);
+      const contratacaoRef = getContratacaoRef(contratacaoId, contratacaoOwnerId);
       const contratacaoSnap = await contratacaoRef.get();
 
       if (!contratacaoSnap.exists) {
@@ -399,23 +438,6 @@ exports.criarPagamentoMarketplace = onCall(
         );
       }
 
-      if (
-        contratacao.preferenceId &&
-        contratacao.checkoutCartaoUrl &&
-        contratacao.metodoPagamento === "cartao" &&
-        contratacao.pagamentoStatus === "pending"
-      ) {
-        return {
-          preferenceId: contratacao.preferenceId,
-          init_point: contratacao.checkoutCartaoUrl,
-          reutilizado: true,
-          split: {
-            empresa: contratacao.valorComissao,
-            cuidador: contratacao.valorLiquidoCuidador,
-          },
-        };
-      }
-
       const nomeCuidador = contratacao.cuidadorNome || "Cuidador";
       const emailPagador =
         request.data?.payerEmail ||
@@ -435,6 +457,10 @@ exports.criarPagamentoMarketplace = onCall(
             description: `Serviço de cuidador: ${nomeCuidador}`,
             payment_method_id: "pix",
             external_reference: contratacaoId,
+            metadata: {
+              contratacaoId,
+              contratacaoOwnerId,
+            },
             payer: {
               email: emailPagador,
             },
@@ -448,11 +474,13 @@ exports.criarPagamentoMarketplace = onCall(
           logger.warn("PIX QR indisponível para esta credencial.", {
             contratacaoId,
             code: mpError?.code || mpError?.error || null,
+            message: mpError?.message || null,
+            cause: mpError?.cause || null,
           });
 
           throw new HttpsError(
             "failed-precondition",
-            "Mercado Pago não liberou QR Code PIX para esta credencial. Configure um Access Token que permita pagamentos PIX via API."
+            "Mercado Pago recusou a credencial ao criar PIX via API. Use um Access Token de conta vendedora habilitada para PIX API; sem isso o QR Code/copia e cola não é retornado."
           );
         }
 
@@ -475,6 +503,9 @@ exports.criarPagamentoMarketplace = onCall(
 
       await contratacaoRef.update({
         paymentId: String(response.id),
+        preferenceId: null,
+        checkoutCartaoUrl: null,
+        metodoPagamento: "pix",
         pagamentoStatus: response.status || "pending",
         status: "aguardando_pagamento",
 
@@ -549,8 +580,9 @@ exports.verificarStatusPagamento = onCall(
         request.data?.contratacaoId,
         "contratacaoId"
       );
+      const contratacaoOwnerId = String(request.data?.contratacaoOwnerId || "").trim();
 
-      const contratacaoRef = db.collection("contratacoes").doc(contratacaoId);
+      const contratacaoRef = getContratacaoRef(contratacaoId, contratacaoOwnerId);
       const contratacaoSnap = await contratacaoRef.get();
 
       if (!contratacaoSnap.exists) {
@@ -625,8 +657,9 @@ exports.confirmarPagamentoContratacao = onCall(
         request.data?.contratacaoId,
         "contratacaoId"
       );
+      const contratacaoOwnerId = String(request.data?.contratacaoOwnerId || "").trim();
 
-      const contratacaoRef = db.collection("contratacoes").doc(contratacaoId);
+      const contratacaoRef = getContratacaoRef(contratacaoId, contratacaoOwnerId);
       const contratacaoSnap = await contratacaoRef.get();
 
       if (!contratacaoSnap.exists) {
@@ -637,6 +670,7 @@ exports.confirmarPagamentoContratacao = onCall(
 
       return await confirmarPagamentoReal({
         contratacaoId,
+        contratacaoOwnerId,
         paymentId: contratacao.paymentId,
         uid,
         metodoPagamento: "pix",
@@ -671,8 +705,9 @@ exports.criarCheckoutCartaoContratacao = onCall(
         request.data?.contratacaoId,
         "contratacaoId"
       );
+      const contratacaoOwnerId = String(request.data?.contratacaoOwnerId || "").trim();
 
-      const contratacaoRef = db.collection("contratacoes").doc(contratacaoId);
+      const contratacaoRef = getContratacaoRef(contratacaoId, contratacaoOwnerId);
       const contratacaoSnap = await contratacaoRef.get();
 
       if (!contratacaoSnap.exists) {
@@ -703,6 +738,7 @@ exports.criarCheckoutCartaoContratacao = onCall(
 
       const checkout = await criarCheckoutContratacao({
         contratacaoId,
+        contratacaoOwnerId,
         contratacao,
         metodoPreferido: "cartao",
       });
@@ -716,6 +752,7 @@ exports.criarCheckoutCartaoContratacao = onCall(
         valorComissao: checkout.valorComissao,
         valorLiquidoCuidador: checkout.valorLiquidoCuidador,
         checkoutCartaoUrl: checkout.initPoint,
+        checkoutSandbox: checkout.sandbox,
         updatedAt: FieldValue.serverTimestamp(),
       });
 
@@ -728,6 +765,7 @@ exports.criarCheckoutCartaoContratacao = onCall(
           status: "pending",
           preferenceId: checkout.preferenceId,
           checkoutUrl: checkout.initPoint,
+          sandbox: checkout.sandbox,
           valorTotal,
           valorComissao: checkout.valorComissao,
           valorLiquidoCuidador: checkout.valorLiquidoCuidador,
@@ -738,6 +776,7 @@ exports.criarCheckoutCartaoContratacao = onCall(
       return {
         preferenceId: checkout.preferenceId,
         init_point: checkout.initPoint,
+        sandbox: checkout.sandbox,
         split: {
           empresa: checkout.valorComissao,
           cuidador: checkout.valorLiquidoCuidador,
@@ -770,6 +809,7 @@ exports.confirmarPagamentoCartaoMercadoPago = onCall(
         request.data?.contratacaoId,
         "contratacaoId"
       );
+      const contratacaoOwnerId = String(request.data?.contratacaoOwnerId || "").trim();
 
       const paymentId = validarString(
         request.data?.paymentId,
@@ -778,6 +818,7 @@ exports.confirmarPagamentoCartaoMercadoPago = onCall(
 
       return await confirmarPagamentoReal({
         contratacaoId,
+        contratacaoOwnerId,
         paymentId,
         uid,
         metodoPagamento: "auto",
@@ -820,6 +861,10 @@ exports.webhookMercadoPago = onRequest(
 
       const pagamento = await buscarPagamentoMercadoPago(paymentId);
       const contratacaoId = pagamento?.external_reference;
+      const contratacaoOwnerId =
+        pagamento?.metadata?.contratacaoOwnerId ||
+        pagamento?.metadata?.contratacao_owner_id ||
+        "";
 
       if (!contratacaoId || pagamento?.status !== "approved") {
         return res.status(200).json({
@@ -830,6 +875,7 @@ exports.webhookMercadoPago = onRequest(
 
       await confirmarPagamentoReal({
         contratacaoId,
+        contratacaoOwnerId,
         paymentId,
         metodoPagamento:
           pagamento?.payment_method_id === "pix" ? "pix" : "cartao",

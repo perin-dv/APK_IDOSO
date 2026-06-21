@@ -142,6 +142,33 @@
             android:layout_marginTop="30dp"
             android:layout_marginBottom="16dp"/>
 
+        <LinearLayout
+            android:id="@+id/layoutStatusPagamento"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="14dp"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:visibility="gone">
+
+            <ProgressBar
+                android:id="@+id/progressoPagamento"
+                style="?android:attr/progressBarStyleSmall"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:indeterminate="true" />
+
+            <TextView
+                android:id="@+id/txtStatusPagamento"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="10dp"
+                android:layout_weight="1"
+                android:text="Gerando pagamento..."
+                android:textColor="#4B5563"
+                android:textSize="14sp" />
+        </LinearLayout>
+
         <!-- PIX -->
 
         <androidx.cardview.widget.CardView

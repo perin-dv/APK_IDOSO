@@ -1,7 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+<ScrollView
+    android:id="@+id/scrollHome"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#F5F7FA">
@@ -70,104 +75,42 @@
             </LinearLayout>
 
         </androidx.cardview.widget.CardView>
-        <!-- STATUS IA -->
-
-        <androidx.cardview.widget.CardView
-            android:id="@+id/cardStatusRotina"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginHorizontal="16dp"
-            android:layout_marginTop="16dp"
-            app:cardCornerRadius="22dp"
-            app:cardElevation="3dp"
-            app:cardBackgroundColor="#DCFCE7">
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:padding="18dp">
-
-                <TextView
-                    android:id="@+id/txtTituloStatus"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="✅ Rotina saudável"
-                    android:textColor="#166534"
-                    android:textSize="18sp"
-                    android:textStyle="bold"/>
-
-                <TextView
-                    android:id="@+id/txtDescricaoStatus"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="6dp"
-                    android:text="Tudo sob controle hoje"
-                    android:textColor="#166534"
-                    android:textSize="14sp"/>
-
-            </LinearLayout>
-
-        </androidx.cardview.widget.CardView>
-
-        <!-- ESPAÇO -->
-
-        <Space
-            android:layout_width="match_parent"
-            android:layout_height="16dp" />
-
-        <!-- TAGS -->
-
-        <HorizontalScrollView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:scrollbars="none">
-
-
-        </HorizontalScrollView>
-
-        <!-- ALERTAS -->
-
         <TextView
+            android:id="@+id/txtTituloBannersSaude"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Alertas"
-            android:textSize="20sp"
-            android:textStyle="bold"
-            android:textColor="#000000"
-            android:layout_marginTop="24dp"
-            android:layout_marginBottom="12dp" />
+            android:layout_marginTop="22dp"
+            android:text="Para cuidar melhor"
+            android:textColor="#0F172A"
+            android:textSize="21sp"
+            android:textStyle="bold" />
 
-        <androidx.cardview.widget.CardView
+        <TextView
+            android:id="@+id/txtResumoBannersSaude"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:cardCornerRadius="16dp"
-            app:cardElevation="2dp">
+            android:layout_marginTop="4dp"
+            android:text="Conteúdos rápidos e personalizados para o idoso."
+            android:textColor="#64748B"
+            android:textSize="14sp" />
+
+        <HorizontalScrollView
+            android:id="@+id/scrollBannersSaude"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="14dp"
+            android:clipToPadding="false"
+            android:overScrollMode="never"
+            android:scrollbars="none">
 
             <LinearLayout
-                android:layout_width="match_parent"
+                android:id="@+id/layoutBannersSaude"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:padding="16dp">
+                android:orientation="horizontal"
+                android:paddingEnd="16dp" />
 
-                <TextView
-                    android:id="@+id/txtAlertas"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="💊 Remédio às 14h"
-                    android:textSize="16sp"
-                    android:textStyle="bold" />
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="📅 Consulta amanhã"
-                    android:textSize="16sp"
-                    android:layout_marginTop="8dp" />
-
-            </LinearLayout>
-
-        </androidx.cardview.widget.CardView>
+        </HorizontalScrollView>
 
         <!-- PROFISSIONAIS -->
 
@@ -199,4 +142,71 @@
 
     </LinearLayout>
 
-</ScrollView>
+    </ScrollView>
+
+    <androidx.cardview.widget.CardView
+        android:id="@+id/cardAvisoEnderecoHome"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="top"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="18dp"
+        android:layout_marginEnd="16dp"
+        android:visibility="gone"
+        app:cardBackgroundColor="#E7F6F7"
+        app:cardCornerRadius="22dp"
+        app:cardElevation="10dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:padding="14dp">
+
+            <ImageView
+                android:layout_width="70dp"
+                android:layout_height="70dp"
+                android:contentDescription="Idoso com marcador de endereço"
+                android:src="@drawable/ic_elder_address" />
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="12dp"
+                android:layout_weight="1"
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Complete o endereço"
+                    android:textColor="#0F2F3D"
+                    android:textSize="17sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"
+                    android:text="Toque para corrigir e deixar o atendimento mais seguro."
+                    android:textColor="#40606D"
+                    android:textSize="13sp" />
+
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/btnFecharAvisoEndereco"
+                android:layout_width="36dp"
+                android:layout_height="36dp"
+                android:gravity="center"
+                android:text="X"
+                android:textColor="#085EAA"
+                android:textSize="15sp"
+                android:textStyle="bold" />
+
+        </LinearLayout>
+
+    </androidx.cardview.widget.CardView>
+
+</FrameLayout>

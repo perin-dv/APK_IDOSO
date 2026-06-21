@@ -2,16 +2,14 @@ package com.mesawa.cuidarproximo
 
 import android.os.Bundle
 import com.google.android.material.bottomnavigation.BottomNavigationView
-import androidx.appcompat.app.AppCompatActivity
+import com.mesawa.cuidarproximo.BaseActivity
 import androidx.navigation.findNavController
-import androidx.navigation.ui.AppBarConfiguration
-import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
 import com.mesawa.cuidarproximo.databinding.ActivityMainBinding
 import com.google.firebase.FirebaseApp
 
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : BaseActivity() {
 
     private lateinit var binding: ActivityMainBinding
 
@@ -33,13 +31,7 @@ class MainActivity : AppCompatActivity() {
         // Configurar o NavController
         val navController = findNavController(R.id.nav_host_fragment_activity_main)
 
-        // Definir as configurações da barra de ação
-        val appBarConfiguration = AppBarConfiguration(
-            setOf(
-                R.id.navigation_home, R.id.navigation_dashboard, R.id.navigation_notifications
-            )
-        )
-        setupActionBarWithNavController(navController, appBarConfiguration)
         navView.setupWithNavController(navController)
+        supportActionBar?.hide()
     }
 }
