@@ -87,11 +87,7 @@ No Windows:
 
 ### Configuracao Firebase
 
-1. Crie um projeto no Firebase Console.
-2. Cadastre um app Android com o package name `com.mesawa.cuidarproximo`.
-3. Baixe o `google-services.json`.
-4. Coloque o arquivo em `app/google-services.json`.
-5. Ative Auth, Firestore e os servicos usados pelo app.
+O app usa Firebase e espera o arquivo local `app/google-services.json`, que nao fica versionado por seguranca. O package name do aplicativo e `com.mesawa.cuidarproximo`.
 
 ### Cloud Functions
 
@@ -102,19 +98,11 @@ npm run lint
 npm run deploy
 ```
 
-## Seguranca
+## Configuracao local
 
-Nao versionar:
+Este repositorio nao versiona arquivos gerados, dependencias instaladas, logs locais ou credenciais de ambiente. Para executar em uma nova maquina, e necessario configurar um projeto Firebase proprio e instalar as dependencias do backend em `functions/`.
 
-- `app/google-services.json`
-- `firebase-debug.log`
-- `node_modules/`
-- `.idea/`
-- credenciais reais do Mercado Pago
-
-Se algum arquivo sensivel ja foi publicado, rotacione as credenciais antes de divulgar o projeto.
-
-## Aprendizados demonstrados
+## Aprendizados
 
 - Construcao de app Android nativo com multiplas telas.
 - Integracao entre app Android e Firebase.
@@ -122,15 +110,10 @@ Se algum arquivo sensivel ja foi publicado, rotacione as credenciais antes de di
 - Backend serverless com Node.js e Firebase Functions.
 - Fluxos de produto reais: cadastro, agenda, contratacao, pagamento e acompanhamento.
 
-## Roadmap
+## Evolucao do projeto
 
-- Adicionar screenshots das principais telas.
-- Documentar modelo de dados do Firestore.
-- Criar testes unitarios para ViewModels e repositories.
-- Configurar GitHub Actions para build Android.
-- Padronizar nomes de pacotes e pastas por feature.
+O projeto segue em evolucao enquanto aprofundo meus estudos em Android, Firebase, organizacao de codigo, testes e arquitetura de aplicativos mobile.
 
 ## Autor
 
 Desenvolvido por [Perin](https://github.com/perin-dv) como projeto de portfolio para Desenvolvimento Android Junior e Engenharia de Software.
-
